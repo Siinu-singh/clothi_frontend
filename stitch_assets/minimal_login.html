@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clothi - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "primary-fixed": "#ffdbd1",
+                "surface": "#fbf9f5",
+                "surface-container-lowest": "#ffffff",
+                "surface-variant": "#e4e2de",
+                "surface-bright": "#fbf9f5",
+                "secondary-fixed-dim": "#e2c0a7",
+                "tertiary": "#5b5e5f",
+                "on-error": "#ffffff",
+                "primary": "#BA5B3F",
+                "on-primary-container": "#ffffff",
+                "on-background": "#1b1c1a",
+                "primary-fixed-dim": "#ffb5a0",
+                "on-surface-variant": "#55423d",
+                "outline": "#89726c",
+                "error": "#ba1a1a",
+                "surface-tint": "#9b442a",
+                "on-tertiary": "#ffffff",
+                "on-tertiary-fixed": "#191c1d",
+                "on-tertiary-container": "#ffffff",
+                "inverse-on-surface": "#f2f0ed",
+                "background": "#fbf9f5",
+                "secondary-fixed": "#ffdcc2",
+                "on-tertiary-fixed-variant": "#444748",
+                "secondary-container": "#fcd9bf",
+                "tertiary-fixed": "#e1e3e4",
+                "on-primary-fixed": "#3b0900",
+                "inverse-primary": "#ffb5a0",
+                "tertiary-container": "#747778",
+                "on-secondary-fixed": "#291707",
+                "error-container": "#ffdad6",
+                "tertiary-fixed-dim": "#c5c7c8",
+                "surface-container-low": "#f5f3ef",
+                "primary-container": "#ba5b3f",
+                "surface-container-high": "#eae8e4",
+                "inverse-surface": "#30312e",
+                "surface-container-highest": "#e4e2de",
+                "on-secondary-fixed-variant": "#59422f",
+                "on-secondary-container": "#785d48",
+                "on-primary": "#ffffff",
+                "surface-dim": "#dbdad6",
+                "outline-variant": "#dcc1ba",
+                "on-surface": "#1b1c1a",
+                "on-secondary": "#ffffff",
+                "on-error-container": "#93000a",
+                "on-primary-fixed-variant": "#7c2d15",
+                "secondary": "#735945",
+                "surface-container": "#efeeea"
+              },
+              fontFamily: {
+                "headline": ["Newsreader"],
+                "body": ["Manrope"],
+                "label": ["Manrope"]
+              },
+              borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px)
+    }
+.lifestyle-bg {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1)), url(https://lh3.googleusercontent.com/aida-public/AB6AXuANclBbCFSzVdnxDsBsBDCFcxxXAUNhFAjAiN8sXj8pe7LAY4tK1zqepWBwEQmB6uufd2GkOpaDJBZ00nRlE51iutvrbJJ1KFvoTHHBCBFvbl_NSUmsxqE6xu_2RO_eVEOyAtjy4u6ocVkpcidM9Hs1P4gC_1uk7gQASkGAWAH45unC2Mf83_ng4xZtExcSYjlXk0eZkr05bM64D6fR7OHaXzDW0xsytq_8EAMgxl2fCCG8fzWnnoJ1MYy25TsG2gPBeCd76b4I4Pg);
+    background-size: cover;
+    background-position: center
+    }
+.material-symbols-outlined {
+    font-variation-settings: "FILL" 0, "wght" 300, "GRAD" 0, "opsz" 24
+    }</style>
+</head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<main class="min-h-screen lifestyle-bg flex items-center justify-center p-6 relative">
+<div class="w-full max-w-md relative z-10">
+<!-- Glassmorphism Container -->
+<div class="glass-card rounded-xl p-8 md:p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.1)]">
+<!-- Brand Anchor -->
+<div class="flex flex-col items-center mb-10">
+<div class="w-12 h-12 bg-[#7D9F88] flex items-center justify-center rounded-sm mb-6">
+<span class="text-white font-headline italic text-2xl font-bold">C</span>
+</div>
+<h1 class="font-headline italic text-5xl text-on-surface tracking-tight">Login</h1>
+<p class="font-body text-on-surface-variant text-sm mt-4 tracking-wide uppercase font-medium opacity-70">Atelier Access</p>
+</div>
+<!-- Form -->
+<form class="space-y-8">
+<!-- Email Input -->
+<div class="space-y-1">
+<label class="block text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant" for="email">Email Address</label>
+<input class="w-full bg-white/50 border border-outline-variant/30 focus:ring-1 focus:ring-primary focus:border-primary px-4 py-3.5 transition-all text-on-surface placeholder:text-outline/40 text-sm" id="email" name="email" placeholder="atelier@clothi.com" type="email"/>
+</div>
+<!-- Password Input -->
+<div class="space-y-1">
+<label class="block text-[10px] font-label uppercase tracking-[0.2em] text-on-surface-variant" for="password">Password</label>
+<input class="w-full bg-white/50 border border-outline-variant/30 focus:ring-1 focus:ring-primary focus:border-primary px-4 py-3.5 transition-all text-on-surface placeholder:text-outline/40 text-sm" id="password" name="password" placeholder="••••••••" type="password"/>
+<div class="flex justify-end pt-1">
+<a class="text-[10px] font-label uppercase tracking-widest text-on-surface-variant hover:text-primary transition-colors underline underline-offset-2" href="#">Forgot Password?</a>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full bg-primary text-on-primary py-4 rounded-sm font-label text-sm font-bold tracking-[0.2em] uppercase shadow-md hover:bg-primary/90 transition-all" type="submit">
+                        Login
+                    </button>
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-outline-variant/20"></div>
+<span class="flex-shrink mx-4 text-[10px] font-label text-on-surface-variant/40 uppercase tracking-widest">or</span>
+<div class="flex-grow border-t border-outline-variant/20"></div>
+</div>
+<button class="w-full border border-outline-variant/40 py-3.5 rounded-sm font-label text-[11px] font-bold tracking-[0.2em] uppercase hover:bg-white/50 transition-all" type="button">
+                        Sign Up
+                    </button>
+</form>
+<div class="mt-12 text-center">
+<p class="text-[11px] font-body text-on-surface-variant/70 tracking-wide uppercase">
+                        New to Clothi? 
+                        <a class="text-primary font-bold hover:underline underline-offset-4 ml-1" href="#">Create Account</a>
+</p>
+</div>
+</div>
+<!-- Contextual Footer -->
+<footer class="mt-12 text-center">
+<p class="text-[10px] font-label uppercase tracking-[0.2em] text-on-surface/60 leading-loose">
+                    © 2024 Clothi Atelier.<br/>Inspired by the coast, tailored for the journey.
+                </p>
+<div class="flex justify-center gap-6 mt-6">
+<a class="text-[10px] font-label uppercase tracking-widest text-on-surface/50 hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-[10px] font-label uppercase tracking-widest text-on-surface/50 hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-[10px] font-label uppercase tracking-widest text-on-surface/50 hover:text-primary transition-colors" href="#">Support</a>
+</div>
+</footer>
+</div>
+<!-- Subtle Branding Overlay -->
+<div class="fixed bottom-12 right-12 pointer-events-none hidden lg:block opacity-[0.03]">
+<span class="font-headline italic text-[12rem] text-on-surface select-none">Atelier</span>
+</div>
+</main>
+</body></html>
