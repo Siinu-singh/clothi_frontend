@@ -1,3 +1,6 @@
+# Backend folder (tracked in separate repo: clothi_backend)
+backend/
+
 # Logs
 logs
 *.log
