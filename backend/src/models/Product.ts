@@ -34,7 +34,6 @@ const productSchema = new Schema<IProduct>(
       type: String,
       required: [true, 'Category is required'],
       enum: ['Men', 'Women', 'Accessories', 'Footwear'],
-      index: true,
     },
     badge: {
       type: String,

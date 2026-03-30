@@ -51,6 +51,7 @@ export class UserProfileController {
         lastName: body.lastName,
         email: body.email,
         avatar: body.avatar,
+        phone: body.phone,
       });
 
       return reply.send({

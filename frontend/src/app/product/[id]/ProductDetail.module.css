@@ -1,0 +1,52 @@
+.page { padding: 2rem 0 5rem; }
+.inner { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+.imageCol {}
+.mainImage { background: var(--color-surface-dim); border-radius: 8px; overflow: hidden; }
+.mainImage img { width: 100%; height: auto; display: block; }
+.infoCol { padding: 1rem 0; }
+.kicker { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-primary); display: block; margin-bottom: 1rem; }
+.title { font-size: 3rem; font-style: italic; font-weight: 400; margin-bottom: 1rem; line-height: 1.15; }
+.price { font-size: 1.375rem; color: var(--color-on-surface-variant); margin-bottom: 2rem; }
+.sectionLabel { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; display: block; margin-bottom: 0.75rem; }
+.colorSection { margin-bottom: 2rem; }
+.colorSwatches { display: flex; gap: 0.75rem; }
+.swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: transform 0.15s; }
+.swatch:hover { transform: scale(1.15); }
+.sizeSection { margin-bottom: 2rem; }
+.sizeGrid { display: flex; gap: 0.5rem; }
+.sizeBtn { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--color-outline-variant); border-radius: 6px; background: transparent; font-size: 0.8125rem; font-weight: 600; cursor: pointer; transition: all 0.15s; font-family: var(--font-body); }
+.sizeBtn:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.sizeBtnActive { composes: sizeBtn; background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.quantitySection { margin-bottom: 2rem; }
+.quantityControl { display: flex; gap: 0.5rem; align-items: center; }
+.quantityControl button { width: 40px; height: 40px; border: 1px solid var(--color-outline-variant); border-radius: 6px; background: transparent; font-size: 1rem; cursor: pointer; transition: all 0.15s; font-weight: 600; }
+.quantityControl button:hover { background: var(--color-primary); color: white; border-color: var(--color-primary); }
+.quantityControl input { width: 60px; height: 40px; border: 1px solid var(--color-outline-variant); border-radius: 6px; text-align: center; font-size: 0.9rem; font-weight: 500; }
+.description { color: var(--color-on-surface-variant); line-height: 1.7; margin-bottom: 2.5rem; font-weight: 300; }
+.actions { display: flex; gap: 0.75rem; margin-bottom: 2rem; }
+.addToCart { flex: 1; background: var(--color-on-surface); color: white; border: none; padding: 1rem; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.3s; }
+.addToCart:hover:not(:disabled) { background: var(--color-primary-container); }
+.addToCart:disabled { opacity: 0.6; cursor: not-allowed; }
+.wishlistBtn { width: 50px; height: 50px; border: 1px solid var(--color-outline-variant); background: transparent; font-size: 1.25rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.wishlistBtn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
+.wishlistBtnActive { border-color: var(--color-primary); color: var(--color-primary); }
+.wishlistBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.details { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8125rem; color: var(--color-tertiary); }
+
+/* Loading & Error States */
+.loadingContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; gap: 1rem; }
+.spinner { width: 40px; height: 40px; border: 3px solid var(--color-outline-variant); border-top-color: var(--color-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loadingContainer p { color: var(--color-on-surface-variant); font-size: 0.9rem; }
+
+.errorContainer { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; gap: 1rem; text-align: center; }
+.errorContainer h2 { font-size: 1.5rem; font-weight: 500; color: var(--color-on-surface); }
+.errorContainer p { color: var(--color-on-surface-variant); margin-bottom: 1rem; }
+.backBtn { background: var(--color-primary); color: white; border: none; padding: 0.75rem 1.5rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+.backBtn:hover { background: var(--color-primary-container); }
+
+/* Reviews Section */
+.reviewsSection { margin-top: 4rem; padding-top: 3rem; border-top: 1px solid var(--color-outline-variant); max-width: 900px; }
+

@@ -31,7 +31,6 @@ const couponSchema = new Schema<ICoupon>(
       trim: true,
       minlength: [3, 'Code must be at least 3 characters'],
       maxlength: [20, 'Code cannot exceed 20 characters'],
-      index: true,
     },
     type: {
       type: String,
@@ -79,7 +78,6 @@ const couponSchema = new Schema<ICoupon>(
     isActive: {
       type: Boolean,
       default: true,
-      index: true,
     },
     startDate: {
       type: Date,
@@ -112,7 +110,6 @@ const couponSchema = new Schema<ICoupon>(
 );
 
 // Indexes
-couponSchema.index({ code: 1 });
 couponSchema.index({ isActive: 1, expiryDate: 1 });
 couponSchema.index({ createdAt: -1 });
 

@@ -8,6 +8,7 @@ export interface UpdateProfileInput {
   lastName?: string;
   email?: string;
   avatar?: string;
+  phone?: string;
 }
 
 export class UserProfileService {
@@ -42,6 +43,10 @@ export class UserProfileService {
 
       if (input.avatar) {
         user.avatar = input.avatar;
+      }
+
+      if (input.phone !== undefined) {
+        user.phone = input.phone || null;
       }
 
       await user.save();

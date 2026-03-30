@@ -23,6 +23,8 @@ import { addressRoutes } from './routes/addresses.js';
 import { profileRoutes } from './routes/profile.js';
 import { reviewRoutes } from './routes/reviews.js';
 import { couponRoutes } from './routes/coupons.js';
+import { wishlistShareRoutes } from './routes/wishlistShare.js';
+import { notificationRoutes } from './routes/notifications.js';
 
 // Create Fastify instance
 const fastify = Fastify({
@@ -100,6 +102,8 @@ async function startServer() {
     fastify.register(profileRoutes, { prefix: '/api/profile' });
     fastify.register(reviewRoutes, { prefix: '/api/reviews' });
     fastify.register(couponRoutes, { prefix: '/api/coupons' });
+    fastify.register(wishlistShareRoutes, { prefix: '/api/wishlist-share' });
+    fastify.register(notificationRoutes, { prefix: '/api/notifications' });
 
     // 404 handler
     fastify.setNotFoundHandler((_request, reply) => {

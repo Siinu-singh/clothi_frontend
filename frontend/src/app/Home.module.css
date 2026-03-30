@@ -1,0 +1,505 @@
+/* ======== HERO ======== */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  min-height: 500px;
+  overflow: hidden;
+}
+.heroBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.1) 50%,
+    transparent 100%
+  );
+}
+.heroContent {
+  position: absolute;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+}
+.heroTitle {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  color: white;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  line-height: 1.15;
+}
+.heroTitle em {
+  font-style: italic;
+}
+.heroActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.heroBtn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  padding: 0.75rem 1.75rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(4px);
+}
+.heroBtn:hover {
+  background: white;
+  color: var(--color-on-surface);
+  border-color: white;
+}
+
+/* ======== NEW ARRIVALS ======== */
+.arrivalsSection {
+  padding: 5rem 0;
+  background: var(--color-bg);
+  overflow: hidden;
+}
+.arrivalsInner {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+.tabRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--color-surface-high);
+  padding-bottom: 0.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+.tabs {
+  display: flex;
+  gap: 0;
+}
+.tab, .tabActive {
+  background: transparent;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-outline);
+  padding: 0.5rem 1.5rem 0.75rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+}
+.tabActive {
+  color: var(--color-on-surface);
+}
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--color-on-surface);
+  border-radius: 3px 3px 0 0;
+}
+.tab:hover {
+  color: var(--color-on-surface);
+}
+.carouselNav {
+  display: flex;
+  gap: 0.5rem;
+}
+.carouselBtn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-surface-high);
+  background: transparent;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+.carouselBtn:hover {
+  background: var(--color-surface-dim);
+}
+
+/* ======== PRODUCT GRID ======== */
+.productGrid {
+  display: flex;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding: 0 2rem 0.5rem 2rem;
+  scroll-behavior: smooth;
+  /* Hide scrollbar while keeping scrolling functional */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.productGrid::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .productGrid {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .productGrid {
+    gap: 1rem;
+  }
+}
+.productCard {
+  display: block;
+  color: var(--color-on-surface);
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+  width: 280px;
+}
+.productCard:hover {
+  transform: translateY(-2px);
+}
+.productImage {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--color-surface-dim);
+  margin-bottom: 0.75rem;
+}
+.productImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.productCard:hover .productImage img {
+  transform: scale(1.04);
+}
+.wishlistBtn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.productCard:hover .wishlistBtn {
+  opacity: 1;
+}
+.wishlistBtn:hover {
+  background: white;
+}
+.colorDots {
+  display: flex;
+  gap: 0.375rem;
+  margin-bottom: 0.5rem;
+}
+.dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid var(--color-surface-high);
+}
+.badge {
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+.productName {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+.productPrice {
+  font-size: 0.875rem;
+  color: var(--color-on-surface);
+}
+
+/* Loading skeleton */
+.productCardSkeleton {
+  width: 280px;
+  flex-shrink: 0;
+}
+.skeletonImage {
+  aspect-ratio: 3 / 4;
+  background: linear-gradient(90deg, var(--color-surface-dim) 25%, var(--color-surface-high) 50%, var(--color-surface-dim) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 0.75rem;
+}
+.skeletonText {
+  height: 1rem;
+  width: 70%;
+  background: linear-gradient(90deg, var(--color-surface-dim) 25%, var(--color-surface-high) 50%, var(--color-surface-dim) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  margin-bottom: 0.5rem;
+}
+.skeletonTextSmall {
+  height: 0.875rem;
+  width: 40%;
+  background: linear-gradient(90deg, var(--color-surface-dim) 25%, var(--color-surface-high) 50%, var(--color-surface-dim) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.noProducts {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-on-surface-variant);
+  font-size: 1rem;
+}
+
+/* ======== SPLIT COLLECTION ======== */
+.splitSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 550px;
+}
+@media (max-width: 768px) {
+  .splitSection {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+.splitHalf {
+  position: relative;
+  overflow: hidden;
+  min-height: 380px;
+}
+.splitHalf img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.splitHalf:hover img {
+  transform: scale(1.03);
+}
+.splitOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.18);
+  transition: background 0.3s ease;
+}
+.splitHalf:hover .splitOverlay {
+  background: rgba(0, 0, 0, 0.25);
+}
+.splitContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* ======== LIFESTYLE DUO ======== */
+.lifestyleDuo {
+  padding: 5rem 0;
+  background: var(--color-bg);
+}
+.lifestyleDuoInner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 768px) {
+  .lifestyleDuoInner {
+    grid-template-columns: 1fr;
+  }
+}
+.lifestyleDuoCard {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+.lifestyleDuoCard img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.lifestyleDuoCard:hover img {
+  transform: scale(1.03);
+}
+.lifestyleDuoLabel {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 2rem;
+  z-index: 2;
+}
+.lifestyleDuoKicker {
+  display: block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+}
+.lifestyleDuoTitle {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  color: white;
+  font-weight: 400;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ======== DESIGN STUDIO ======== */
+.studioBanner {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  overflow: hidden;
+}
+.studioBg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.6) saturate(0.9);
+}
+.studioOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+}
+.studioContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  text-align: center;
+}
+.studioTitle {
+  font-family: var(--font-body);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: white;
+  margin-bottom: 1.5rem;
+}
+.studioLink {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  padding-bottom: 0.25rem;
+  transition: border-color 0.2s ease;
+}
+.studioLink:hover {
+  border-color: white;
+}
+
+/* ======== BRAND VALUES ======== */
+.valuesSection {
+  padding: 5rem 0;
+  background: var(--color-bg);
+}
+.valuesInner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+@media (max-width: 768px) {
+  .valuesInner {
+    grid-template-columns: 1fr;
+  }
+}
+.valueCard {
+  text-align: center;
+}
+.valueImg {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.valueImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.valueCard:hover .valueImg img {
+  transform: scale(1.04);
+}
+.valueTitle {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 400;
+  margin-bottom: 0.75rem;
+  color: var(--color-on-surface);
+}
+.valueLink {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-on-surface);
+  border-bottom: 1px solid var(--color-on-surface);
+  padding-bottom: 2px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.valueLink:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}

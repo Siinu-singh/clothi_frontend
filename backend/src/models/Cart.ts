@@ -26,7 +26,6 @@ const cartSchema = new Schema<ICart>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
     },
     items: {
       type: [cartItemSchema],
@@ -46,8 +45,5 @@ const cartSchema = new Schema<ICart>(
     collection: 'carts',
   }
 );
-
-// Index for faster lookups
-cartSchema.index({ userId: 1 });
 
 export const Cart = model<ICart>('Cart', cartSchema);

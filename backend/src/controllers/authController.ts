@@ -226,43 +226,52 @@ export class AuthController {
   }
 
   async loginWithGoogle(request: FastifyRequest, reply: FastifyReply) {
-    const body = request.body as { token: string };
+    try {
+      const body = request.body as { token: string };
 
-    if (!body.token) {
-      return reply.code(400).send({
+      if (!body.token) {
+        return reply.code(400).send({
+          success: false,
+          error: 'Bad Request',
+          message: 'Google token is required',
+        });
+      }
+
+      const { user, isNewUser } = await authService.loginWithGoogle(body.token);
+      const { accessToken, refreshToken } = generateTokens(user._id.toString());
+
+      reply.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      return reply.code(200).send({
+        success: true,
+        data: {
+          user: {
+            _id: user._id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            avatar: user.avatar,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+          },
+          accessToken,
+          isNewUser,
+        },
+        message: isNewUser ? 'User registered with Google' : 'Login with Google successful',
+      });
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      return reply.code(401).send({
         success: false,
-        error: 'Bad Request',
-        message: 'Google token is required',
+        error: 'Unauthorized',
+        message: error?.message || 'Google authentication failed',
       });
     }
-
-    const { user, isNewUser } = await authService.loginWithGoogle(body.token);
-    const { accessToken, refreshToken } = generateTokens(user._id.toString());
-
-    reply.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
-
-    return reply.code(200).send({
-      success: true,
-      data: {
-        user: {
-          _id: user._id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          avatar: user.avatar,
-          role: user.role,
-          isEmailVerified: user.isEmailVerified,
-        },
-        accessToken,
-        isNewUser,
-      },
-      message: isNewUser ? 'User registered with Google' : 'Login with Google successful',
-    });
   }
 
   async loginWithApple(request: FastifyRequest, reply: FastifyReply) {

@@ -46,6 +46,13 @@ export class ForbiddenError extends AppError {
   }
 }
 
+export class BadRequestError extends AppError {
+  constructor(message: string = 'Bad request') {
+    super(message, HTTP_STATUS.BAD_REQUEST);
+    this.name = 'BadRequestError';
+  }
+}
+
 export function handleError(error: unknown) {
   if (error instanceof AppError) {
     return {

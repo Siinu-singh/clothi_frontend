@@ -26,7 +26,6 @@ const addressSchema = new Schema<IAddress>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
     },
     firstName: {
       type: String,

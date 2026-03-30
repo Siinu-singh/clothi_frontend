@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
 import { logger } from '../utils/logger.js';
+import { EmailNotification } from '../models/EmailNotification.js';
+import { NotificationPreferences } from '../models/NotificationPreferences.js';
+import { Types } from 'mongoose';
 
 interface EmailOptions {
   to: string;
@@ -181,6 +184,123 @@ export class EmailService {
       subject: 'Welcome to Clothi!',
       html,
     });
+  }
+
+  async sendNotificationEmail(
+    userId: string,
+    userEmail: string,
+    notificationType: string,
+    subject: string,
+    html: string
+  ): Promise<boolean> {
+    try {
+      // Check user's notification preferences
+      let preferences = await NotificationPreferences.findOne({
+        userId: new Types.ObjectId(userId),
+      });
+
+      if (!preferences) {
+        // Create default preferences
+        preferences = await NotificationPreferences.create({
+          userId: new Types.ObjectId(userId),
+        });
+      }
+
+      // Type to preference mapping
+      const typeMap: Record<string, string> = {
+        order: 'orderEmails',
+        review_approved: 'reviewEmails',
+        wishlist_shared: 'wishlistEmails',
+        promotion: 'promotionEmails',
+        newsletter: 'newsletterEmails',
+        security: 'securityEmails',
+      };
+
+      const preferenceKey = typeMap[notificationType];
+      if (preferenceKey && !preferences[preferenceKey as keyof typeof preferences]) {
+        logger.info(`User ${userId} has disabled ${notificationType} emails`);
+        return false;
+      }
+
+      // Send email
+      const sent = await this.sendEmail({
+        to: userEmail,
+        subject,
+        html,
+      });
+
+      // Record notification
+      if (sent) {
+        await EmailNotification.create({
+          userId: new Types.ObjectId(userId),
+          type: notificationType,
+          subject,
+          template: notificationType,
+          sent: true,
+          sentAt: new Date(),
+        });
+      } else {
+        await EmailNotification.create({
+          userId: new Types.ObjectId(userId),
+          type: notificationType,
+          subject,
+          template: notificationType,
+          sent: false,
+          bounced: true,
+          bouncedAt: new Date(),
+          bounceReason: 'Failed to send',
+        });
+      }
+
+      return sent;
+    } catch (error) {
+      logger.error(`Failed to send notification email to ${userEmail}:`, error);
+      return false;
+    }
+  }
+
+  async updateNotificationPreferences(userId: string, preferences: Partial<any>) {
+    return await NotificationPreferences.findOneAndUpdate(
+      { userId: new Types.ObjectId(userId) },
+      preferences,
+      { new: true, upsert: true }
+    );
+  }
+
+  async getNotificationPreferences(userId: string) {
+    let preferences = await NotificationPreferences.findOne({
+      userId: new Types.ObjectId(userId),
+    });
+
+    if (!preferences) {
+      preferences = await NotificationPreferences.create({
+        userId: new Types.ObjectId(userId),
+      });
+    }
+
+    return preferences;
+  }
+
+  async getUserNotifications(userId: string, limit: number = 20, page: number = 1) {
+    const skip = (page - 1) * limit;
+
+    const [notifications, total] = await Promise.all([
+      EmailNotification.find({ userId: new Types.ObjectId(userId) })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      EmailNotification.countDocuments({ userId: new Types.ObjectId(userId) }),
+    ]);
+
+    return {
+      notifications,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+    };
   }
 }
 

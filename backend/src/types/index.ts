@@ -16,6 +16,7 @@ export interface IUser {
   firstName: string;
   lastName: string;
   avatar?: string;
+  phone?: string | null;
   role: 'customer' | 'admin';
   isEmailVerified: boolean;
   oauthProviders?: IOAuthProvider[];

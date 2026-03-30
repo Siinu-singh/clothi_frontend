@@ -7,13 +7,11 @@ const favoriteSchema = new Schema<IFavorite>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
     },
     productId: {
       type: Schema.Types.ObjectId,
       ref: 'Product',
       required: true,
-      index: true,
     },
   },
   {

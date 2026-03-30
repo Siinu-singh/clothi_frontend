@@ -1,4 +1,16 @@
 import { z } from 'zod';
+import { Types } from 'mongoose';
+
+// MongoDB ObjectId validator
+export const isValidObjectId = (id: string): boolean => {
+  return Types.ObjectId.isValid(id) && new Types.ObjectId(id).toString() === id;
+};
+
+// Zod schema for MongoDB ObjectId
+export const objectIdSchema = z.string().refine(
+  (val) => isValidObjectId(val),
+  { message: 'Invalid ID format' }
+);
 
 // Auth Validators
 export const registerSchema = z.object({
@@ -48,7 +60,7 @@ export const productSchema = z.object({
 
 // Cart Validators
 export const addToCartSchema = z.object({
-  productId: z.string().min(1, 'Product ID is required'),
+  productId: objectIdSchema,
   quantity: z.number().min(1, 'Quantity must be at least 1').max(100),
   size: z.string().optional(),
   color: z.string().optional(),
@@ -60,7 +72,7 @@ export const updateCartItemSchema = z.object({
 
 // Favorite Validators
 export const addToFavoriteSchema = z.object({
-  productId: z.string().min(1, 'Product ID is required'),
+  productId: objectIdSchema,
 });
 
 // Newsletter Validators

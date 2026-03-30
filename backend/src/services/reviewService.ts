@@ -88,22 +88,14 @@ export class ReviewService {
     };
   }> {
     try {
-      const product = await Product.findById(productId);
+      const product = await Product.findById(productId).lean();
       if (!product) {
         throw new NotFoundError('Product not found');
       }
 
       const { status = 'approved', limit = 10, page = 1 } = options;
       const skip = (page - 1) * limit;
-
-      // Build query
-      const query: any = {
-        productId: new Types.ObjectId(productId),
-        status,
-      };
-
-      // Count total
-      const total = await Review.countDocuments(query);
+      const objectId = new Types.ObjectId(productId);
 
       // Sort options
       let sortOption: any = { createdAt: -1 };
@@ -113,20 +105,57 @@ export class ReviewService {
         sortOption = { helpful: -1 };
       }
 
-      // Get reviews
-      const reviews = await Review.find(query)
-        .sort(sortOption)
-        .skip(skip)
-        .limit(limit)
-        .lean();
+      // Use aggregation pipeline to combine stats calculation with reviews fetch
+      const pipeline = [
+        {
+          $match: {
+            productId: objectId,
+            status: 'approved',
+          },
+        },
+        {
+          $facet: {
+            // Get paginated reviews
+            reviews: [
+              { $sort: sortOption },
+              { $skip: skip },
+              { $limit: limit },
+            ],
+            // Calculate stats from all approved reviews
+            stats: [
+              {
+                $group: {
+                  _id: null,
+                  averageRating: { $avg: '$rating' },
+                  totalReviews: { $sum: 1 },
+                  ratingDistribution: {
+                    $push: '$rating',
+                  },
+                },
+              },
+              {
+                $project: {
+                  averageRating: { $round: ['$averageRating', 1] },
+                  totalReviews: 1,
+                  ratingDistribution: 1,
+                },
+              },
+            ],
+            // Get total count for pagination
+            count: [
+              {
+                $count: 'total',
+              },
+            ],
+          },
+        },
+      ];
 
-      // Calculate statistics
-      const allReviews = await Review.find({
-        productId: new Types.ObjectId(productId),
-        status: 'approved',
-      });
+      const result = await Review.aggregate(pipeline);
+      const [aggregated] = result;
 
-      const ratingDistribution = {
+      // Process stats
+      let ratingDistribution = {
         5: 0,
         4: 0,
         3: 0,
@@ -134,17 +163,22 @@ export class ReviewService {
         1: 0,
       };
 
-      let totalRating = 0;
-      allReviews.forEach((review) => {
-        totalRating += review.rating;
-        ratingDistribution[review.rating as keyof typeof ratingDistribution]++;
-      });
+      if (aggregated.stats.length > 0) {
+        const statsData = aggregated.stats[0];
+        statsData.ratingDistribution.forEach((rating: number) => {
+          ratingDistribution[rating as keyof typeof ratingDistribution]++;
+        });
+      }
 
-      const averageRating =
-        allReviews.length > 0 ? totalRating / allReviews.length : 0;
+      const total =
+        aggregated.count.length > 0 ? aggregated.count[0].total : 0;
+      const statsData =
+        aggregated.stats.length > 0
+          ? aggregated.stats[0]
+          : { averageRating: 0, totalReviews: 0 };
 
       return {
-        reviews: reviews as IReview[],
+        reviews: aggregated.reviews as IReview[],
         pagination: {
           total,
           page,
@@ -152,8 +186,8 @@ export class ReviewService {
           pages: Math.ceil(total / limit),
         },
         stats: {
-          averageRating: Math.round(averageRating * 10) / 10,
-          totalReviews: allReviews.length,
+          averageRating: statsData.averageRating || 0,
+          totalReviews: statsData.totalReviews || 0,
           ratingDistribution,
         },
       };
@@ -282,26 +316,25 @@ export class ReviewService {
   }
 
   /**
-   * Mark review as helpful/unhelpful
+   * Mark review as helpful/unhelpful (atomic operation)
    */
   async markReviewHelpful(
     reviewId: string,
     helpful: boolean
   ): Promise<IReview> {
     try {
-      const review = await Review.findById(reviewId);
+      const updateOp = helpful
+        ? { $inc: { helpful: 1 } }
+        : { $inc: { unhelpful: 1 } };
+
+      const review = await Review.findByIdAndUpdate(reviewId, updateOp, {
+        new: true,
+      });
 
       if (!review) {
         throw new NotFoundError('Review not found');
       }
 
-      if (helpful) {
-        review.helpful += 1;
-      } else {
-        review.unhelpful += 1;
-      }
-
-      await review.save();
       return review.toObject();
     } catch (error) {
       throw error;

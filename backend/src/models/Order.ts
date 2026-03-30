@@ -128,7 +128,6 @@ const orderSchema = new Schema<IOrder>(
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      index: true,
     },
     items: {
       type: [orderItemSchema],
@@ -183,20 +182,17 @@ const orderSchema = new Schema<IOrder>(
       type: String,
       enum: ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'],
       default: 'pending',
-      index: true,
     },
     paymentStatus: {
       type: String,
       enum: ['pending', 'completed', 'failed', 'refunded'],
       default: 'pending',
-      index: true,
     },
     paymentMethod: String,
     paymentId: String,
     trackingNumber: {
       type: String,
       sparse: true,
-      index: true,
     },
     notes: String,
   },

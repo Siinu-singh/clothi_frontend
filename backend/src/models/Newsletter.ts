@@ -10,7 +10,6 @@ const newsletterSubscriptionSchema = new Schema<INewsletterSubscription>(
       lowercase: true,
       trim: true,
       match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Invalid email format'],
-      index: true,
     },
     isSubscribed: {
       type: Boolean,
@@ -32,7 +31,6 @@ const newsletterSubscriptionSchema = new Schema<INewsletterSubscription>(
 );
 
 // Indexes for faster queries
-newsletterSubscriptionSchema.index({ email: 1 });
 newsletterSubscriptionSchema.index({ isSubscribed: 1 });
 
 export const NewsletterSubscription = model<INewsletterSubscription>(

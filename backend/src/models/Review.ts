@@ -21,13 +21,11 @@ const reviewSchema = new Schema<IReview>(
       type: Schema.Types.ObjectId,
       ref: 'Product',
       required: [true, 'Product ID is required'],
-      index: true,
     },
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'User ID is required'],
-      index: true,
     },
     rating: {
       type: Number,
@@ -68,7 +66,6 @@ const reviewSchema = new Schema<IReview>(
         message: 'Status must be pending, approved, or rejected',
       },
       default: 'pending',
-      index: true,
     },
   },
   {
@@ -79,7 +76,6 @@ const reviewSchema = new Schema<IReview>(
 
 // Indexes
 reviewSchema.index({ productId: 1, status: 1 });
-reviewSchema.index({ userId: 1 });
 reviewSchema.index({ rating: 1 });
 reviewSchema.index({ createdAt: -1 });
 reviewSchema.index({ productId: 1, rating: 1 });

@@ -50,8 +50,13 @@ export class OAuthService {
         picture: payload.picture,
         email_verified: payload.email_verified,
       };
-    } catch (error) {
-      throw new UnauthorizedError('Failed to verify Google token');
+    } catch (error: any) {
+      console.error('Google token verification error:', {
+        message: error?.message,
+        code: error?.code,
+        errorType: error?.constructor?.name
+      });
+      throw new UnauthorizedError(`Failed to verify Google token: ${error?.message || 'Unknown error'}`);
     }
   }
 
