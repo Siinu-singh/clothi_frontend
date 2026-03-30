@@ -1,7 +1,7 @@
 // Helper to parse JSON or throw errors nicely
 export async function apiFetch(endpoint, options = {}) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-  const url = `${baseUrl}${endpoint}`;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  const url = `${baseUrl}/api${endpoint}`;
   
   // Set default headers, extracting token from localStorage if exists
   const headers = {
