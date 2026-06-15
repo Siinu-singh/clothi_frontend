@@ -59,11 +59,11 @@ const Footer = () => {
           <div className={styles.col}>
             <h4 className={styles.colTitle}>HELPFUL LINKS</h4>
             <ul className={styles.linkList}>
-              <li><Link href="/">About Us</Link></li>
+              <li><Link href="/about">About Us</Link></li>
               <li><Link href="/">Our Stores</Link></li>
               <li><Link href="/">Blogs</Link></li>
               <li><Link href="/">Contact Us</Link></li>
-              <li><Link href="/orders">Track Order</Link></li>
+              {/* <li><Link href="/orders">Track Order</Link></li> */}
               <li><Link href="/">Career</Link></li>
             </ul>
           </div>
@@ -91,9 +91,9 @@ const Footer = () => {
               <a href="tel:+917503735901">+91 75037 35901</a>
             </div>
             <div className={styles.socialRow}>
-              <a href="#" className={styles.socialLink} aria-label="Instagram"><Instagram size={28} strokeWidth={1.5} /></a>
-              <a href="#" className={styles.socialLink} aria-label="LinkedIn"><Linkedin size={28} strokeWidth={1.5} /></a>
-              <a href="#" className={styles.socialLink} aria-label="X"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+              <a href="https://www.instagram.com/clothi.co.in/" className={styles.socialLink} aria-label="Instagram"><Instagram size={28} strokeWidth={1.5} /></a>
+              <a href="https://www.linkedin.com/company/clothi-official/" className={styles.socialLink} aria-label="LinkedIn"><Linkedin size={28} strokeWidth={1.5} /></a>
+              <a href="#" className={styles.socialLink} aria-label="X"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg></a>
               <a href="#" className={styles.socialLink} aria-label="Facebook"><Facebook size={28} strokeWidth={1.5} /></a>
             </div>
           </div>

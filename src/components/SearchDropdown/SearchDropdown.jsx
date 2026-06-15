@@ -26,9 +26,17 @@ export default function SearchDropdown({ isOpen, onClose, externalSearchQuery, s
   const dropdownRef = useRef(null);
   const gridWrapperRef = useRef(null);
   const inputRef = useRef(null);
+  const isFetchingRef = useRef(false);
 
-  const categories = ['', 'The Crown Series', 'Zen-G by Clothi', 'Motion x', 'Prime Basics'];
+  const categories = ['', 'The Crown Series', 'Zen-G by Clothi', 'Motion X', 'Prime Basics'];
   const ITEMS_PER_PAGE = 8;
+  
+  const categoryToBackendMap = {
+    'The Crown Series': 'POLO',
+    'Zen-G by Clothi': 'OVERSIZE',
+    'Motion X': 'DRY-FIT',
+    'Prime Basics': 'CASUAL'
+  };
   
   const topSearches = [
     'POLO', 'LINEN SHIRTS', 'WHITE SHIRT', 
@@ -83,7 +91,7 @@ export default function SearchDropdown({ isOpen, onClose, externalSearchQuery, s
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !loading) {
+        if (entries[0].isIntersecting && hasMore && !isFetchingRef.current && !loading) {
           fetchMoreProducts(activeCategory, page + 1, searchQuery);
         }
       },
@@ -102,10 +110,14 @@ export default function SearchDropdown({ isOpen, onClose, externalSearchQuery, s
   }, [hasMore, isLoadingMore, loading, activeCategory, searchQuery, page]);
 
   const fetchProducts = async (category, pageNum, search) => {
+    if (isFetchingRef.current) return;
     try {
+      isFetchingRef.current = true;
       setLoading(true);
-      let url = `/products?limit=${ITEMS_PER_PAGE}&skip=${(pageNum - 1) * ITEMS_PER_PAGE}&sortBy=popular`;
-      if (category) url += `&category=${encodeURIComponent(category)}`;
+      let url = `/products?limit=${ITEMS_PER_PAGE}&page=${pageNum}&sortBy=popular`;
+      if (category && categoryToBackendMap[category]) {
+        url += `&category=${encodeURIComponent(categoryToBackendMap[category])}`;
+      }
       if (search) url += `&search=${encodeURIComponent(search)}`;
       
       const response = await apiFetch(url);
@@ -117,25 +129,39 @@ export default function SearchDropdown({ isOpen, onClose, externalSearchQuery, s
       console.error('Failed to fetch products:', err);
     } finally {
       setLoading(false);
+      isFetchingRef.current = false;
     }
   };
 
   const fetchMoreProducts = async (category, pageNum, search) => {
+    if (isFetchingRef.current) return;
     try {
+      isFetchingRef.current = true;
       setIsLoadingMore(true);
-      let url = `/products?limit=${ITEMS_PER_PAGE}&skip=${(pageNum - 1) * ITEMS_PER_PAGE}&sortBy=popular`;
-      if (category) url += `&category=${encodeURIComponent(category)}`;
+      let url = `/products?limit=${ITEMS_PER_PAGE}&page=${pageNum}&sortBy=popular`;
+      if (category && categoryToBackendMap[category]) {
+        url += `&category=${encodeURIComponent(categoryToBackendMap[category])}`;
+      }
       if (search) url += `&search=${encodeURIComponent(search)}`;
       
       const response = await apiFetch(url);
       const newProducts = response.data?.products || response.products || [];
-      setProducts(prev => [...prev, ...newProducts]);
+      
+      const existingIds = new Set(products.map(p => p._id));
+      const uniqueNew = newProducts.filter(p => !existingIds.has(p._id));
+      
+      setProducts(prev => [...prev, ...uniqueNew]);
       setPage(pageNum);
-      setHasMore(newProducts.length === ITEMS_PER_PAGE);
+      
+      // Stop fetching if the API returns no new unique products to prevent infinite loops
+      setHasMore(newProducts.length === ITEMS_PER_PAGE && uniqueNew.length > 0);
     } catch (err) {
       console.error('Failed to fetch more products:', err);
+      // Disable further fetching if we hit an error (like 429) to prevent infinite error loops
+      setHasMore(false);
     } finally {
       setIsLoadingMore(false);
+      isFetchingRef.current = false;
     }
   };
 

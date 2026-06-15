@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Manrope:wght@200..800&family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Cormorant:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Faherty-inspired warm coastal palette */
@@ -27,8 +27,40 @@
 
   --color-footer-bg: #1a2630;
 
+  /* Airbnb-inspired typography stack */
   --font-headline: 'Newsreader', serif;
-  --font-body: 'Manrope', sans-serif;
+  --font-body: 'Poppins', 'Inter', -apple-system, system-ui, sans-serif;
+  --font-display: 'Poppins', -apple-system, system-ui, sans-serif;
+
+  /* Typography scales (Airbnb-inspired) */
+  --font-size-h1: clamp(32px, 6vw, 56px);
+  --font-size-h2: 28px;
+  --font-size-h3: 22px;
+  --font-size-h4: 20px;
+  --font-size-h5: 16px;
+  --font-size-body: 16px;
+  --font-size-sm: 14px;
+  --font-size-xs: 12px;
+  
+  /* Font weights */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+  
+  /* Letter spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-relaxed: 0.01em;
+  --letter-spacing-wide: 0.05em;
+
+  /* Line heights */
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 1.75;
 
   --transition-smooth: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   --transition-fast: all 0.15s ease;
@@ -57,7 +89,51 @@ body {
 }
 
 h1, h2, h3, h4, h5, .display-text {
-  font-family: var(--font-headline);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  line-height: var(--line-height-tight);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--letter-spacing-tight);
+  margin-bottom: 1.25rem;
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+  margin-bottom: 1rem;
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--letter-spacing-normal);
+  margin-bottom: 0.875rem;
+}
+
+h5 {
+  font-size: var(--font-size-h5);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--letter-spacing-normal);
+  margin-bottom: 0.75rem;
+}
+
+p {
+  font-size: var(--font-size-body);
+  font-weight: var(--fw-regular);
+  line-height: var(--line-height-relaxed);
+  letter-spacing: var(--letter-spacing-normal);
 }
 
 a {
@@ -69,6 +145,91 @@ a {
 img {
   max-width: 100%;
   display: block;
+}
+
+/* ---- Typography Utilities (Airbnb-inspired) ---- */
+
+.typo-display {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: var(--fw-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.typo-headline-large {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: var(--fw-bold);
+  line-height: 1.43;
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.typo-headline-medium {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: var(--fw-semibold);
+  line-height: 1.27;
+  letter-spacing: -0.01em;
+}
+
+.typo-headline-small {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: var(--fw-semibold);
+  line-height: 1.5;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.typo-body-large {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: var(--fw-regular);
+  line-height: 1.5;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.typo-body-medium {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: var(--fw-regular);
+  line-height: 1.43;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.typo-body-small {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: var(--fw-regular);
+  line-height: 1.33;
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.typo-label-large {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  line-height: 1.43;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.typo-label-medium {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  line-height: 1.33;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.typo-label-small {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--fw-semibold);
+  line-height: 1.27;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
 /* ---- Utility Classes ---- */
@@ -103,19 +264,25 @@ img {
   justify-content: center;
   background: var(--color-on-surface);
   color: var(--color-white);
-  padding: 1rem 2.5rem;
+  padding: 12px 24px;
   border: none;
   font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.05em;
+  border-radius: 8px;
   cursor: pointer;
   transition: var(--transition-smooth);
+  line-height: 1.5;
 }
 
 .btn-primary:hover {
   background: var(--color-primary-container);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
 }
 
 .btn-outline {
@@ -124,33 +291,39 @@ img {
   justify-content: center;
   background: transparent;
   color: var(--color-on-surface);
-  padding: 1rem 2.5rem;
-  border: 1px solid var(--color-on-surface);
+  padding: 12px 24px;
+  border: 1px solid var(--color-outline-variant);
   font-family: var(--font-body);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.05em;
+  border-radius: 8px;
   cursor: pointer;
   transition: var(--transition-smooth);
+  line-height: 1.5;
 }
 
 .btn-outline:hover {
-  background: var(--color-on-surface);
-  color: var(--color-white);
+  background: var(--color-surface-container);
+  border-color: var(--color-on-surface);
+}
+
+.btn-outline:active {
+  transform: scale(0.96);
 }
 
 .section-label {
   font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
+  font-size: 12px;
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--color-on-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
+  line-height: 1.5;
 }
 
 .section-label::before,

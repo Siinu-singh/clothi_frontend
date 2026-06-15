@@ -59,3 +59,13 @@ coverage/
 # Added by code-review-graph
 .code-review-graph/
 .playwright-mcp/
+
+.SOLID_ANALYSIS_AND_REFACTORING.md
+.ARCHITECTURE_VISUAL.md
+.ARCHITECTURE_SUMMARY.md
+.agents
+.claude
+.mcp.json
+.opencode.json
+skills-lock.json
+

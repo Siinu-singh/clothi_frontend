@@ -2,7 +2,23 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Search, Heart, User, ShoppingBag, LogOut, Package, Settings, Menu, X, Instagram, Facebook, Youtube } from 'lucide-react';
+import { 
+  ShoppingBag, 
+  User, 
+  Search, 
+  Menu, 
+  X,
+  ChevronRight,
+  ChevronDown,
+  Heart,
+  Package,
+  Settings,
+  LogOut,
+  Home,
+  Instagram,
+  Facebook,
+  Youtube
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
@@ -192,7 +208,6 @@ const Navbar = () => {
             <div className={styles.center}>
               <ul className={styles.navLinks}>
                 <li><Link href="/catalog" className={`${styles.navLink} ${isScrolled ? styles.navLinkScrolled : ''}`}>SHOP ALL</Link></li>
-                <li><Link href="/collections" className={`${styles.navLink} ${isScrolled ? styles.navLinkScrolled : ''}`}>COLLECTIONS</Link></li>
                 <li><Link href="/catalog?category=POLO" className={`${styles.navLink} ${isScrolled ? styles.navLinkScrolled : ''}`}>POLO</Link></li>
                 <li><Link href="/catalog?category=OVERSIZE" className={`${styles.navLink} ${isScrolled ? styles.navLinkScrolled : ''}`}>OVERSIZE</Link></li>
                 <li><Link href="/catalog?category=CASUAL" className={`${styles.navLink} ${isScrolled ? styles.navLinkScrolled : ''}`}>CASUAL</Link></li>
@@ -388,6 +403,10 @@ const Navbar = () => {
 
     {/* Mobile Bottom Bar — Snitch style */}
     <div className={styles.mobileBottomBar}>
+      <Link href="/" className={styles.bottomBarItem}>
+        <Home size={22} strokeWidth={1.5} />
+        <span>Home</span>
+      </Link>
       <button 
         className={styles.bottomBarItem}
         onClick={() => setSearchOpen(true)}

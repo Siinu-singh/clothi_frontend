@@ -9,6 +9,11 @@ export async function apiFetch(endpoint, options = {}) {
     ...options.headers,
   };
 
+  // Remove Content-Type if there is no body, to prevent 400 Bad Request on empty DELETE/GET requests
+  if (!options.body) {
+    delete headers['Content-Type'];
+  }
+
   if (typeof window !== 'undefined') {
     const token = localStorage.getItem('token');
     if (token) {
