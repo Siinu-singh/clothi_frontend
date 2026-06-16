@@ -1,9 +1,8 @@
 import './globals.css';
 import Navbar from '../components/Navbar/Navbar';
-import AnnouncementBar from '../components/AnnouncementBar/AnnouncementBar';
-
 import Footer from '../components/Footer/Footer';
 import Providers from '../components/Providers/Providers';
+import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import { Analytics } from "@vercel/analytics/react";
 import { JsonLd } from '../components/seo/JsonLd';
 
@@ -155,11 +154,16 @@ export default function RootLayout({ children }) {
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
         <Providers>
-          {/* <AnnouncementBar /> */}
+          <a href="#main-content" className="skip-link">
+            Skip to main content
+          </a>
           <Navbar />
           <div style={{ height: '64px' }} className="navbar-spacer" />
-          <main>{children}</main>
-
+          <main id="main-content">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
           <Footer />
           <Analytics />
         </Providers>

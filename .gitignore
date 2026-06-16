@@ -68,4 +68,9 @@ coverage/
 .mcp.json
 .opencode.json
 skills-lock.json
+.windsurfrules
+.cursorrules
+.cursor/
+.kiro/
+
 

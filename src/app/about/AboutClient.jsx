@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Leaf, Heart, Globe, Users, Award, Truck } from 'lucide-react';
 import styles from './About.module.css';
 
@@ -74,11 +75,13 @@ export default function AboutClient() {
     <div className={styles.aboutPage}>
       {/* Hero Section */}
       <section className={styles.hero}>
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
           alt="CLOTHI sustainable fashion brand story - coastal lifestyle apparel"
+          fill
+          sizes="100vw"
           className={styles.heroBg}
-          loading="eager"
+          priority
         />
         <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
@@ -118,10 +121,10 @@ export default function AboutClient() {
             </p>
           </div>
           <div className={styles.storyImage}>
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
               alt="CLOTHI artisan workshop - sustainable clothing production"
-              loading="lazy"
+              sizes="(max-width: 768px) 100vw, 50vw"
               width={800}
               height={1000}
             />
@@ -180,10 +183,10 @@ export default function AboutClient() {
             {team.map((member, index) => (
               <article key={index} className={styles.teamCard}>
                 <div className={styles.teamImage}>
-                  <img 
+                  <Image 
                     src={member.image} 
                     alt={`${member.name} - ${member.role} at CLOTHI`}
-                    loading="lazy"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                     width={400}
                     height={400}
                   />
@@ -213,11 +216,12 @@ export default function AboutClient() {
 
       {/* CTA Section */}
       <section className={styles.ctaSection} aria-labelledby="cta-title">
-        <img
+        <Image
           src="https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
           alt="Join the sustainable fashion movement"
+          fill
+          sizes="100vw"
           className={styles.ctaBg}
-          loading="lazy"
         />
         <div className={styles.ctaOverlay} />
         <div className={styles.ctaContent}>

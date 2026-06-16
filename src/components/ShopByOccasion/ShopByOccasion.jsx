@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './ShopByOccasion.module.css';
 
 export default function ShopByOccasion() {
@@ -54,10 +55,13 @@ export default function ShopByOccasion() {
             title={`Shop ${occasion.title}`}
           >
             <div className={styles.imageWrapper}>
-              <img
+              <Image
                 src={occasion.image}
                 alt={occasion.title}
-                className={styles.image}
+                fill
+                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 14vw"
+                style={{ objectFit: 'cover' }}
+                quality={80}
               />
             </div>
             <div className={styles.gradientOverlay}></div>

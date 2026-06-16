@@ -37,7 +37,7 @@ const socialPosts = [
 ];
 
 const handles = [
-  { text: 'clothi_official', icon: Instagram, color: '#E1306C' },
+  { text: 'clothi.co.in', icon: Instagram, color: '#E1306C' },
   { text: 'clothi_tweets', icon: Twitter, color: '#1DA1F2' },
   { text: 'clothi_studio', icon: Youtube, color: '#FF0000' },
   { text: 'clothi_style', icon: Facebook, color: '#1877F2' }
@@ -57,7 +57,7 @@ const SocialFeed = () => {
 
     const type = () => {
       const currentHandle = handles[index];
-      
+
       if (isDeleting) {
         setTypedText(currentHandle.text.slice(0, i - 1));
         i--;
@@ -89,7 +89,7 @@ const SocialFeed = () => {
     const video = event.currentTarget;
     const playPromise = video.play();
     if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => {});
+      playPromise.catch(() => { });
     }
   };
 
@@ -114,7 +114,7 @@ const SocialFeed = () => {
       if (!nextMuted) {
         const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => {});
+          playPromise.catch(() => { });
         }
       }
     }

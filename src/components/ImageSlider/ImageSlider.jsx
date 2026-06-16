@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import styles from './ImageSlider.module.css';
 
 export default function ImageSlider({ images = [] }) {
@@ -36,10 +37,15 @@ export default function ImageSlider({ images = [] }) {
           <div
             key={index}
             className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}
-            style={{
-              backgroundImage: `url('${image}')`,
-            }}
           >
+            <Image
+              src={image}
+              alt={`Slide ${index + 1}`}
+              fill
+              sizes="100vw"
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
+              priority={index === 0}
+            />
             {/* Text Overlay - First slide */}
             {index === 0 && (
               <div className={styles.textOverlay}>

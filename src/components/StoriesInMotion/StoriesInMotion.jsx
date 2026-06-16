@@ -32,17 +32,17 @@ export default function StoriesInMotion() {
       <div className={styles.carousel} ref={scrollRef}>
         {MOCK_STORIES.map(story => (
           <div key={story.id} className={styles.card}>
-             <video 
-               src={story.video} 
-               className={styles.video} 
-               autoPlay 
-               loop 
-               muted 
-               playsInline 
-             />
-             <div className={styles.overlay}>
-                <h3 className={styles.storyTitle}>{story.title}</h3>
-             </div>
+            <video
+              src={story.video}
+              className={styles.video}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+            <div className={styles.overlay}>
+              <h3 className={styles.storyTitle}>{story.title}</h3>
+            </div>
           </div>
         ))}
       </div>

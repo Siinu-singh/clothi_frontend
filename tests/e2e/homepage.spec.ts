@@ -11,6 +11,39 @@ test.describe('Homepage', () => {
     await page.screenshot({ path: 'test-results/homepage.png' })
   })
 
+  test('should display New Arrivals in grid and handle Load More', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForLoadState('networkidle')
+    
+    // Check for SHOP BY section
+    const shopByLabel = page.locator('h2:has-text("SHOP BY")').first()
+    await expect(shopByLabel).toBeVisible()
+    
+    // Check that we have product cards visible (should be up to 10 initially)
+    const productGrid = page.locator('div[class*="productGrid"]')
+    const productCards = productGrid.locator('a[class*="productCard"]')
+    
+    // Ensure we have some product cards visible
+    const initialCount = await productCards.count()
+    console.log(`Initial visible product cards count: ${initialCount}`)
+    expect(initialCount).toBeGreaterThan(0)
+    expect(initialCount).toBeLessThanOrEqual(10)
+    
+    // Check if the Load More button is visible (it should be if there are more than 10 products fetched)
+    const loadMoreBtn = page.locator('button:has-text("Load More")')
+    const hasLoadMore = await loadMoreBtn.isVisible()
+    
+    if (hasLoadMore) {
+      // Click Load More
+      await loadMoreBtn.click()
+      
+      // Verify that more product cards are visible now
+      const newCount = await productCards.count()
+      console.log(`Visible product cards count after Load More: ${newCount}`)
+      expect(newCount).toBeGreaterThan(initialCount)
+    }
+  })
+
   test('should have navigation links', async ({ page }) => {
     await page.goto('/')
     

@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './WatchAndShop.module.css';
 import { Play, ArrowUpRight } from 'lucide-react';
 
@@ -25,7 +26,14 @@ export default function WatchAndShop() {
         {MOCK_REELS.map(reel => (
           <div key={reel.id} className={styles.card}>
             <div className={styles.imageWrapper}>
-              <img src={reel.image} alt={reel.title} className={styles.image} />
+              <Image
+                src={reel.image}
+                alt={reel.title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                style={{ objectFit: 'cover' }}
+                quality={80}
+              />
               <div className={styles.overlay}>
                 <div className={styles.views}>
                   <Play fill="currentColor" size={12} /> {reel.views} Views

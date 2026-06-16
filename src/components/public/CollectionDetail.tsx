@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Collection } from '@/models/collection';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface CollectionDetailProps {
   collection: Collection;
@@ -49,10 +50,13 @@ export default function CollectionDetail({ collection }: CollectionDetailProps) 
             {/* Main Image */}
             <div className="relative overflow-hidden rounded-lg bg-gray-100 aspect-square mb-4">
               {selectedImage && (
-                <img
+                <Image
                   src={selectedImage.url}
                   alt={selectedImage.alt || collection.name}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
                 />
               )}
 
@@ -78,16 +82,18 @@ export default function CollectionDetail({ collection }: CollectionDetailProps) 
                   <button
                     key={idx}
                     onClick={() => setSelectedImageIdx(idx)}
-                    className={`w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${
+                    className={`relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition ${
                       idx === selectedImageIdx
                         ? 'border-blue-600'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <img
+                    <Image
                       src={image.url}
                       alt={`${collection.name} ${idx + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      sizes="80px"
+                      className="object-cover"
                     />
                   </button>
                 ))}

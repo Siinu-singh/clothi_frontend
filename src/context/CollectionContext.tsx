@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, type ReactNode, type Dispatch, type SetStateAction } from 'react';
 import {
   getCollections,
   getFeaturedCollections,
@@ -22,15 +22,46 @@ import {
   UpdateCollectionInput,
 } from '@/models/collection';
 
-const CollectionContext = createContext();
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  pages: number;
+}
 
-export function CollectionProvider({ children }) {
-  const [collections, setCollections] = useState([]);
-  const [featuredCollections, setFeaturedCollections] = useState([]);
-  const [currentCollection, setCurrentCollection] = useState(null);
-  const [stats, setStats] = useState(null);
+interface CollectionContextValue {
+  collections: Collection[];
+  setCollections: Dispatch<SetStateAction<Collection[]>>;
+  featuredCollections: Collection[];
+  currentCollection: Collection | null;
+  setCurrentCollection: Dispatch<SetStateAction<Collection | null>>;
+  stats: CollectionStats | null;
+  loading: boolean;
+  error: string | null;
+  pagination: Pagination;
+  loadFeaturedCollections: (page?: number, limit?: number) => Promise<void>;
+  loadCollections: (page?: number, limit?: number, filters?: { category?: string; tags?: string[]; search?: string }) => Promise<void>;
+  searchCollectionsHandler: (query: string, page?: number, limit?: number) => Promise<void>;
+  loadByCategory: (category: string, page?: number, limit?: number) => Promise<void>;
+  loadByTags: (tags: string[], page?: number, limit?: number) => Promise<void>;
+  loadAllCollections: () => Promise<void>;
+  loadStats: () => Promise<void>;
+  handleCreateCollection: (data: CreateCollectionInput) => Promise<Collection>;
+  handleUpdateCollection: (id: string, data: UpdateCollectionInput) => Promise<Collection>;
+  handleDeleteCollection: (id: string) => Promise<void>;
+  handleToggleFeatured: (id: string, featured: boolean) => Promise<Collection>;
+  handleToggleActive: (id: string, active: boolean) => Promise<Collection>;
+}
+
+const CollectionContext = createContext<CollectionContextValue | null>(null);
+
+export function CollectionProvider({ children }: { children: ReactNode }) {
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [featuredCollections, setFeaturedCollections] = useState<Collection[]>([]);
+  const [currentCollection, setCurrentCollection] = useState<Collection | null>(null);
+  const [stats, setStats] = useState<CollectionStats | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -48,14 +79,14 @@ export function CollectionProvider({ children }) {
       setPagination(response.pagination);
     } catch (err) {
       console.error('Failed to load featured collections', err);
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
   }, []);
 
   // Load all collections with filters
-  const loadCollections = useCallback(async (page = 1, limit = 10, filters) => {
+  const loadCollections = useCallback(async (page = 1, limit = 10, filters?: { category?: string; tags?: string[]; search?: string }) => {
     try {
       setLoading(true);
       setError(null);
@@ -64,7 +95,7 @@ export function CollectionProvider({ children }) {
       setPagination(response.pagination);
     } catch (err) {
       console.error('Failed to load collections', err);
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -72,7 +103,7 @@ export function CollectionProvider({ children }) {
 
   // Search collections
   const searchCollectionsHandler = useCallback(
-    async (query, page = 1, limit = 10) => {
+    async (query: string, page = 1, limit = 10) => {
       try {
         setLoading(true);
         setError(null);
@@ -81,7 +112,7 @@ export function CollectionProvider({ children }) {
         setPagination(response.pagination);
       } catch (err) {
         console.error('Failed to search collections', err);
-        setError(err.message);
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -91,7 +122,7 @@ export function CollectionProvider({ children }) {
 
   // Load collections by category
   const loadByCategory = useCallback(
-    async (category, page = 1, limit = 10) => {
+    async (category: string, page = 1, limit = 10) => {
       try {
         setLoading(true);
         setError(null);
@@ -100,7 +131,7 @@ export function CollectionProvider({ children }) {
         setPagination(response.pagination);
       } catch (err) {
         console.error('Failed to load collections by category', err);
-        setError(err.message);
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -110,7 +141,7 @@ export function CollectionProvider({ children }) {
 
   // Load collections by tags
   const loadByTags = useCallback(
-    async (tags, page = 1, limit = 10) => {
+    async (tags: string[], page = 1, limit = 10) => {
       try {
         setLoading(true);
         setError(null);
@@ -119,7 +150,7 @@ export function CollectionProvider({ children }) {
         setPagination(response.pagination);
       } catch (err) {
         console.error('Failed to load collections by tags', err);
-        setError(err.message);
+        setError((err as Error).message);
       } finally {
         setLoading(false);
       }
@@ -136,7 +167,7 @@ export function CollectionProvider({ children }) {
       setCollections(response.data || []);
     } catch (err) {
       console.error('Failed to load all collections', err);
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -152,7 +183,7 @@ export function CollectionProvider({ children }) {
     } catch (err) {
       console.error('Failed to load collection stats', err);
       // Check if it's an auth error (401)
-      if (err.message.includes('401') || err.message.includes('Unauthorized') || err.message.includes('Invalid or missing token')) {
+      if ((err as Error).message.includes('401') || (err as Error).message.includes('Unauthorized') || (err as Error).message.includes('Invalid or missing token')) {
         setError('Please log in again as admin to access this page.');
         // Optionally redirect to login
         if (typeof window !== 'undefined') {
@@ -160,7 +191,7 @@ export function CollectionProvider({ children }) {
           window.location.href = '/login';
         }
       } else {
-        setError(err.message);
+        setError((err as Error).message);
       }
     } finally {
       setLoading(false);
@@ -168,7 +199,7 @@ export function CollectionProvider({ children }) {
   }, []);
 
   // Create collection (admin)
-  const handleCreateCollection = useCallback(async (data) => {
+  const handleCreateCollection = useCallback(async (data: CreateCollectionInput) => {
     try {
       setError(null);
       const response = await createCollection(data);
@@ -176,13 +207,13 @@ export function CollectionProvider({ children }) {
       return response.data;
     } catch (err) {
       console.error('Failed to create collection', err);
-      setError(err.message);
+      setError((err as Error).message);
       throw err;
     }
   }, []);
 
   // Update collection (admin)
-  const handleUpdateCollection = useCallback(async (id, data) => {
+  const handleUpdateCollection = useCallback(async (id: string, data: UpdateCollectionInput) => {
     try {
       setError(null);
       const response = await updateCollection(id, data);
@@ -195,13 +226,13 @@ export function CollectionProvider({ children }) {
       return response.data;
     } catch (err) {
       console.error('Failed to update collection', err);
-      setError(err.message);
+      setError((err as Error).message);
       throw err;
     }
   }, [currentCollection]);
 
   // Delete collection (admin)
-  const handleDeleteCollection = useCallback(async (id) => {
+  const handleDeleteCollection = useCallback(async (id: string) => {
     try {
       setError(null);
       await deleteCollection(id);
@@ -211,13 +242,13 @@ export function CollectionProvider({ children }) {
       }
     } catch (err) {
       console.error('Failed to delete collection', err);
-      setError(err.message);
+      setError((err as Error).message);
       throw err;
     }
   }, [currentCollection]);
 
   // Toggle featured (admin)
-  const handleToggleFeatured = useCallback(async (id, featured) => {
+  const handleToggleFeatured = useCallback(async (id: string, featured: boolean) => {
     try {
       setError(null);
       const response = await toggleFeaturedCollection(id, featured);
@@ -230,13 +261,13 @@ export function CollectionProvider({ children }) {
       return response.data;
     } catch (err) {
       console.error('Failed to toggle featured status', err);
-      setError(err.message);
+      setError((err as Error).message);
       throw err;
     }
   }, [currentCollection]);
 
   // Toggle active (admin)
-  const handleToggleActive = useCallback(async (id, active) => {
+  const handleToggleActive = useCallback(async (id: string, active: boolean) => {
     try {
       setError(null);
       const response = await toggleActiveCollection(id, active);
@@ -249,7 +280,7 @@ export function CollectionProvider({ children }) {
       return response.data;
     } catch (err) {
       console.error('Failed to toggle active status', err);
-      setError(err.message);
+      setError((err as Error).message);
       throw err;
     }
   }, [currentCollection]);
@@ -292,7 +323,7 @@ export function CollectionProvider({ children }) {
   );
 }
 
-export const useCollection = () => {
+export const useCollection = (): CollectionContextValue => {
   const context = useContext(CollectionContext);
   if (!context) {
     throw new Error('useCollection must be used within CollectionProvider');

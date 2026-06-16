@@ -1,26 +1,63 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import { Heart, ChevronLeft, ChevronRight, ShoppingCart } from 'lucide-react';
-import SocialFeed from '../components/SocialFeed/SocialFeed';
-import { apiFetch } from '../lib/api';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import styles from './Home.module.css';
 import ImageSlider from '../components/ImageSlider/ImageSlider';
+import ProductCard from '../components/ProductCard/ProductCard';
+import { apiFetch } from '../lib/api';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { useToast } from '../context/ToastContext';
 
-import WatchAndShop from '../components/WatchAndShop/WatchAndShop';
-import SoulOfClothi from '../components/SoulOfClothi/SoulOfClothi';
-import StoriesInMotion from '../components/StoriesInMotion/StoriesInMotion';
-import ClotheiBrand from '../components/ClotheiBrand/ClotheiBrand';
-import MatchTheMood from '../components/MatchTheMood/MatchTheMood';
-import ShopByOccasion from '../components/ShopByOccasion/ShopByOccasion';
+// ── Lazy-loaded below-the-fold sections ─────────────────────────
+const WatchAndShop = dynamic(
+  () => import('../components/WatchAndShop/WatchAndShop'),
+  { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
+);
+
+const MatchTheMood = dynamic(
+  () => import('../components/MatchTheMood/MatchTheMood'),
+  { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
+);
+
+const ShopByOccasion = dynamic(
+  () => import('../components/ShopByOccasion/ShopByOccasion'),
+  { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
+);
+
+const SoulOfClothi = dynamic(
+  () => import('../components/SoulOfClothi/SoulOfClothi'),
+  { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
+);
+
+const SocialFeed = dynamic(
+  () => import('../components/SocialFeed/SocialFeed'),
+  { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
+);
+
+// ── Categories ──────────────────────────────────────────────────
+const categories = [
+  { label: 'ALL', value: 'all', backendValue: '' },
+  { label: 'POLO', value: 'polo', backendValue: 'POLO' },
+  { label: 'OVERSIZE', value: 'oversize', backendValue: 'OVERSIZE' },
+  { label: 'DRY-FIT', value: 'dry-fit', backendValue: 'DRY-FIT' },
+  { label: 'CASUAL', value: 'casual', backendValue: 'CASUAL' },
+];
+
+// ── Slider images ───────────────────────────────────────────────
+const sliderImages = [
+  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776509044/WEBSITE_BANNERS_gvcuq6.png',
+  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
+  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508755/DRYFIT_image_iy9bke.png',
+  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508907/Zen-G_by_clothi_1_tkltka.png',
+];
+
 export default function Home() {
   const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
-  const carouselRef = useRef(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(10);
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorited } = useFavorites();
   const { toast } = useToast();
@@ -28,62 +65,53 @@ export default function Home() {
   useEffect(() => {
     const fetchNewArrivals = async () => {
       try {
-        setLoading(true);
-        const sortBy = activeTab === 'trending' ? 'popular' : 'newest';
-        const response = await apiFetch(`/products?limit=14&sortBy=${sortBy}`);
+        if (visibleCount === 10) {
+          setLoading(true);
+        } else {
+          setLoadingMore(true);
+        }
+        const categoryObj = categories.find(c => c.value === activeCategory);
+        const categoryParam = categoryObj && categoryObj.backendValue ? `&category=${categoryObj.backendValue}` : '';
+        const fetchLimit = visibleCount + 10;
+        const response = await apiFetch(`/products?limit=${fetchLimit}&sortBy=newest${categoryParam}`);
         setNewArrivals(response.data?.products || response.products || []);
       } catch (error) {
         console.error('Failed to fetch new arrivals:', error);
       } finally {
         setLoading(false);
+        setLoadingMore(false);
       }
     };
 
     fetchNewArrivals();
-  }, [activeTab]);
+  }, [activeCategory, visibleCount]);
 
-  // Handle tab filter clicks
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
+  // Memoized visible products slice
+  const visibleProducts = useMemo(
+    () => newArrivals.slice(0, visibleCount),
+    [newArrivals, visibleCount]
+  );
 
-  // Handle carousel left arrow click
-  const handleCarouselLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({
-        left: -300,
-        behavior: 'smooth',
-      });
-    }
-  };
+  // Stable callback refs to prevent ProductCard re-renders
+  const handleCategoryClick = useCallback((categoryVal) => {
+    setActiveCategory(categoryVal);
+    setVisibleCount(10);
+  }, []);
 
-  // Handle carousel right arrow click
-  const handleCarouselRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({
-        left: 300,
-        behavior: 'smooth',
-      });
-    }
-  };
-
-  // Format price for display
-  const formatPrice = (price) => {
+  const formatPrice = useCallback((price) => {
     if (typeof price === 'number') {
       return `₹${price.toFixed(0)}`;
     }
     return price;
-  };
+  }, []);
 
-  // Handle add to cart
-  const handleAddToCart = async (e, productId) => {
+  const handleAddToCart = useCallback(async (e, productId) => {
     e.preventDefault();
     e.stopPropagation();
     await addToCart(productId, 1);
-  };
+  }, [addToCart]);
 
-  // Handle add/remove from favorites
-  const handleFavoriteClick = async (e, productId) => {
+  const handleFavoriteClick = useCallback(async (e, productId) => {
     e.preventDefault();
     e.stopPropagation();
     try {
@@ -101,14 +129,7 @@ export default function Home() {
     } catch (error) {
       toast.error('Failed to update favorites');
     }
-  };
-
-  const sliderImages = [
-    'https://res.cloudinary.com/dsrht8rss/image/upload/v1776509044/WEBSITE_BANNERS_gvcuq6.png',
-    'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
-    'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508755/DRYFIT_image_iy9bke.png',
-    'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508907/Zen-G_by_clothi_1_tkltka.png',
-  ];
+  }, [isFavorited, removeFromFavorites, addToFavorites, toast]);
 
   return (
     <>
@@ -117,107 +138,68 @@ export default function Home() {
 
       <WatchAndShop />
 
-      {/* ========== NEW ARRIVALS ========== */}
-      <section className={styles.arrivalsSection}>
+      {/* ========== SHOP BY ========== */}
+      <section className={styles.arrivalsSection} aria-label="Shop by category">
         <div className={styles.arrivalsInner}>
-          <div className="section-label" style={{ marginBottom: '2.5rem', paddingLeft: '2rem' }}>NEW ARRIVALS</div>
-          <div className={styles.tabRow}>
+          <h2 className={styles.sectionLabel}>SHOP BY</h2>
+          <div className={styles.tabRow} role="tablist" aria-label="Product categories">
             <div className={styles.tabs}>
-              <button className={activeTab === 'all' ? styles.tabActive : styles.tab} onClick={() => handleTabClick('all')}>All</button>
-              {/* <button className={styles.tab}>Men&apos;s</button> */}
-              <button className={activeTab === 'trending' ? styles.tabActive : styles.tab} onClick={() => handleTabClick('trending')}>Trending</button>
-            </div>
-            <div className={styles.carouselNav}>
-              <button onClick={handleCarouselLeft} className={styles.carouselBtn}><ChevronLeft size={18} /></button>
-              <button onClick={handleCarouselRight} className={styles.carouselBtn}><ChevronRight size={18} /></button>
+              {categories.map(cat => (
+                <button
+                  key={cat.value}
+                  role="tab"
+                  aria-selected={activeCategory === cat.value}
+                  className={activeCategory === cat.value ? styles.tabActive : styles.tab}
+                  onClick={() => handleCategoryClick(cat.value)}
+                >
+                  {cat.label}
+                </button>
+              ))}
             </div>
           </div>
-          <div className={styles.productGrid} ref={carouselRef}>
+          <div className={styles.productGrid} role="tabpanel" aria-label="Products">
             {loading ? (
-              // Loading skeleton
-              Array.from({ length: 14 }).map((_, i) => (
-                <div key={i} className={styles.productCardSkeleton}>
+              Array.from({ length: 10 }).map((_, i) => (
+                <div key={i} className={styles.productCardSkeleton} aria-hidden="true">
                   <div className={styles.skeletonImage} />
                   <div className={styles.skeletonText} />
                   <div className={styles.skeletonTextSmall} />
                 </div>
               ))
-            ) : newArrivals.length === 0 ? (
-              <p className={styles.noProducts}>No products found</p>
+            ) : visibleProducts.length === 0 ? (
+              <p className={styles.noProducts} role="status">No products found</p>
             ) : (
-              newArrivals.map(product => (
-                <Link href={`/product/${product._id}`} key={product._id} className={styles.productCard}>
-                  <div className={styles.productImage}>
-                    <img src={product.image} alt={product.title} />
-                    <button 
-                      className={styles.wishlistBtn} 
-                      onClick={(e) => handleFavoriteClick(e, product._id)}
-                      aria-label={isFavorited(product._id) ? 'Remove from favorites' : 'Add to favorites'}
-                    >
-                      <Heart 
-                        size={16} 
-                        strokeWidth={1.5}
-                        fill={isFavorited(product._id) ? 'currentColor' : 'none'}
-                      />
-                    </button>
-                    <button
-                      className={styles.addToCartBtn}
-                      onClick={(e) => handleAddToCart(e, product._id)}
-                      title="Add to Cart"
-                    >
-                      <ShoppingCart size={16} strokeWidth={1.5} />
-                      <span>Add to Cart</span>
-                    </button>
-                  </div>
-                  {product.badge && <span className={styles.badge}>{product.badge}</span>}
-                  <h3 className={styles.productName}>{product.title}</h3>
-                  <p className={styles.productPrice}>{formatPrice(product.price)}</p>
-                </Link>
+              visibleProducts.map((product, index) => (
+                <ProductCard
+                  key={product._id}
+                  product={product}
+                  isFavorited={isFavorited(product._id)}
+                  onAddToCart={handleAddToCart}
+                  onFavoriteClick={handleFavoriteClick}
+                  formatPrice={formatPrice}
+                  isAboveFold={index < 5}
+                />
               ))
             )}
           </div>
+          {!loading && newArrivals.length > visibleCount && (
+            <div className={styles.loadMoreContainer}>
+              <button
+                onClick={() => setVisibleCount(prev => prev + 10)}
+                className={styles.loadMoreBtn}
+                disabled={loadingMore}
+                aria-label="Load more products"
+              >
+                {loadingMore ? 'Loading...' : 'Load More'}
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ========== CLOTHI BRAND SECTION ========== */}
-      {/* <ClotheiBrand /> */}
-
-      {/* ========== MATCH THE MOOD ========== */}
       <MatchTheMood />
-
-      {/* ========== SHOP BY OCCASION ========== */}
       <ShopByOccasion />
-
-      {/* ========== BRAND VALUES ========== */}
-      {/* <section className={styles.valuesSection}>
-        <div className={styles.valuesInner}>
-          <div className={styles.valueCard}>
-            <div className={styles.valueImg}>
-              <img src="/brand_values.png" alt="Find a Store" style={{ objectPosition: 'left top' }} />
-            </div>
-            <h4 className={styles.valueTitle}>Come see us</h4>
-            <Link href="/catalog" className={styles.valueLink}>FIND A STORE</Link>
-          </div>
-          <div className={styles.valueCard}>
-            <div className={styles.valueImg}>
-              <img src="/brand_values.png" alt="Sustainability" style={{ objectPosition: 'right top' }} />
-            </div>
-            <h4 className={styles.valueTitle}>Our Commitment</h4>
-            <Link href="/" className={styles.valueLink}>SUSTAINABILITY</Link>
-          </div>
-          <div className={styles.valueCard}>
-            <div className={styles.valueImg}>
-              <img src="/brand_values.png" alt="Artisan Design" style={{ objectPosition: 'right bottom' }} />
-            </div>
-            <h4 className={styles.valueTitle}>Artisan Partners</h4>
-            <Link href="/" className={styles.valueLink}>LEARN MORE</Link>
-          </div>
-        </div>
-      </section> */}
-
       <SoulOfClothi />
-      <StoriesInMotion />
-
       <SocialFeed />
     </>
   );

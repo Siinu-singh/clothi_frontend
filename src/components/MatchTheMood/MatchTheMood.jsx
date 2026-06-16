@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './MatchTheMood.module.css';
 
 export default function MatchTheMood() {
@@ -49,11 +50,13 @@ export default function MatchTheMood() {
         {moods.map((mood) => (
           <Link href={mood.link} key={mood.id} className={styles.cardContainer}>
             <div className={styles.cardInner}>
-              <img
+              <Image
                 src={mood.image}
-                alt="Match the mood"
-                loading="lazy"
-                decoding="async"
+                alt={mood.title}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                style={{ objectFit: 'cover' }}
+                quality={80}
                 className={`${styles.image} ${mood.id === '85c52675-d3ab-4a07-822e-127ab173e314' ? styles.imageLuxury : ''}`}
               />
               <div className={styles.labelOverlay}>

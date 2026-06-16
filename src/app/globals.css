@@ -360,3 +360,52 @@ img {
     height: 56px !important;
   }
 }
+
+/* ======== ACCESSIBILITY UTILITIES ======== */
+
+/* Skip-to-content link — visible only on keyboard focus */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-on-surface, #1a1a1a);
+  color: var(--color-bg, #fff);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  z-index: 10000;
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 0.5rem;
+  outline: 2px solid var(--color-primary, #9b4329);
+  outline-offset: 2px;
+}
+
+/* Screen-reader only — hides visually, remains in a11y tree */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus-visible — clear keyboard focus indicator for all interactive elements */
+:focus-visible {
+  outline: 2px solid var(--color-primary, #9b4329);
+  outline-offset: 2px;
+}
+
+/* Remove default focus ring for mouse users */
+:focus:not(:focus-visible) {
+  outline: none;
+}

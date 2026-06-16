@@ -189,6 +189,7 @@ const Navbar = () => {
       <nav
         className={`${styles.navbar} ${isScrolled ? styles.scrolled : ''}`}
         onMouseLeave={() => setActiveMenu(null)}
+        aria-label="Main navigation"
       >
          <div className={styles.inner}>
             <div className={styles.left}>

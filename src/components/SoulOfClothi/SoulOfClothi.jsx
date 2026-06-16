@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './SoulOfClothi.module.css';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function SoulOfClothi() {
   return (
@@ -8,7 +9,14 @@ export default function SoulOfClothi() {
       <div className={styles.container}>
         <div className={styles.left}>
           <div className={styles.imageWrapper}>
-            <img src="https://res.cloudinary.com/dsrht8rss/image/upload/v1781448258/pomelli_photoshoot_image_4_5_0614_3_fmabsj.png" alt="Sour Of Clothi" className={styles.image} />
+            <Image
+              src="https://res.cloudinary.com/dsrht8rss/image/upload/v1781448258/pomelli_photoshoot_image_4_5_0614_3_fmabsj.png"
+              alt="The Soul of Clothi"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectFit: 'cover' }}
+              quality={80}
+            />
           </div>
         </div>
         <div className={styles.right}>
