@@ -147,7 +147,23 @@ const websiteSchema = {
   },
 };
 
-export default function RootLayout({ children }) {
+async function getAnnouncements() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // Use no-cache in server-side fetch to ensure fresh announcements
+    const res = await fetch(`${baseUrl}/api/announcements`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data?.success ? data.data : [];
+  } catch (err) {
+    console.error('Failed to pre-fetch announcements on server:', err);
+    return [];
+  }
+}
+
+export default async function RootLayout({ children }) {
+  const announcements = await getAnnouncements();
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
@@ -157,8 +173,8 @@ export default function RootLayout({ children }) {
           <a href="#main-content" className="skip-link">
             Skip to main content
           </a>
-          <Navbar />
-          <div style={{ height: '64px' }} className="navbar-spacer" />
+          <Navbar initialAnnouncements={announcements} />
+          <div style={{ height: '100px' }} className="navbar-spacer" />
           <main id="main-content">
             <ErrorBoundary>
               {children}

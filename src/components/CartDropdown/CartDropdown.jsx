@@ -36,42 +36,51 @@ export default function CartDropdown({ isOpen, onClose }) {
   // Not logged in
   if (!user) {
     return (
-      <div className={styles.dropdown}>
-        <div className={styles.emptyState}>
-          <ShoppingBag size={32} strokeWidth={1} className={styles.emptyIcon} />
-          <p>Sign in to view your cart</p>
-          <Link href="/login" className={styles.signInBtn} onClick={onClose}>
-            Sign In
-          </Link>
+      <>
+        <div className={styles.overlay} onClick={onClose} />
+        <div className={styles.dropdown}>
+          <div className={styles.emptyState}>
+            <ShoppingBag size={32} strokeWidth={1} className={styles.emptyIcon} />
+            <p>Sign in to view your cart</p>
+            <Link href="/login" className={styles.signInBtn} onClick={onClose}>
+              Sign In
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   // Loading
   if (loading) {
     return (
-      <div className={styles.dropdown}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Loading cart...</p>
+      <>
+        <div className={styles.overlay} onClick={onClose} />
+        <div className={styles.dropdown}>
+          <div className={styles.loading}>
+            <div className={styles.spinner}></div>
+            <p>Loading cart...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   // Empty cart
   if (!cart.items || cart.items.length === 0) {
     return (
-      <div className={styles.dropdown}>
-        <div className={styles.emptyState}>
-          <ShoppingBag size={32} strokeWidth={1} className={styles.emptyIcon} />
-          <p>Your cart is empty</p>
-          <Link href="/catalog" className={styles.shopBtn} onClick={onClose}>
-            Start Shopping
-          </Link>
+      <>
+        <div className={styles.overlay} onClick={onClose} />
+        <div className={styles.dropdown}>
+          <div className={styles.emptyState}>
+            <ShoppingBag size={32} strokeWidth={1} className={styles.emptyIcon} />
+            <p>Your cart is empty</p>
+            <Link href="/catalog" className={styles.shopBtn} onClick={onClose}>
+              Start Shopping
+            </Link>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -80,71 +89,74 @@ export default function CartDropdown({ isOpen, onClose }) {
   const remainingCount = cart.items.length - 3;
 
   return (
-    <div className={styles.dropdown}>
-      <div className={styles.header}>
-        <h4>Shopping Cart</h4>
-        <span className={styles.itemCount}>{cart.totalItems || cart.items.length} items</span>
-      </div>
+    <>
+      <div className={styles.overlay} onClick={onClose} />
+      <div className={styles.dropdown}>
+        <div className={styles.header}>
+          <h4>Shopping Cart</h4>
+          <span className={styles.itemCount}>{cart.totalItems || cart.items.length} items</span>
+        </div>
 
-      <div className={styles.items}>
-        {displayItems.map((item) => (
-          <div key={item._id} className={styles.item}>
-            <Link 
-              href={`/product/${item.productId}`} 
-              className={styles.itemImage}
-              onClick={onClose}
-            >
-              <img 
-                src={item.product?.image || '/placeholder.png'} 
-                alt={item.product?.title || 'Product'} 
-              />
-            </Link>
-            <div className={styles.itemInfo}>
+        <div className={styles.items}>
+          {displayItems.map((item) => (
+            <div key={item._id} className={styles.item}>
               <Link 
-                href={`/product/${item.productId}`}
-                className={styles.itemName}
+                href={`/product/${item.productId}`} 
+                className={styles.itemImage}
                 onClick={onClose}
               >
-                {item.product?.title || 'Product'}
+                <img 
+                  src={item.product?.image || '/placeholder.png'} 
+                  alt={item.product?.title || 'Product'} 
+                />
               </Link>
-              <div className={styles.itemMeta}>
-                <span>{item.size}</span>
-                {item.color && <span> / {item.color}</span>}
-              </div>
-              <div className={styles.itemPriceRow}>
-                <span className={styles.itemPrice}>
-                  {formatPrice(item.product?.price)} × {item.quantity}
-                </span>
-                <button
-                  className={styles.removeBtn}
-                  onClick={(e) => handleRemoveItem(e, item._id, item.product?.title)}
-                  disabled={removing === item._id}
-                  aria-label="Remove"
+              <div className={styles.itemInfo}>
+                <Link 
+                  href={`/product/${item.productId}`}
+                  className={styles.itemName}
+                  onClick={onClose}
                 >
-                  <Trash2 size={14} />
-                </button>
+                  {item.product?.title || 'Product'}
+                </Link>
+                <div className={styles.itemMeta}>
+                  <span>{item.size}</span>
+                  {item.color && <span> / {item.color}</span>}
+                </div>
+                <div className={styles.itemPriceRow}>
+                  <span className={styles.itemPrice}>
+                    {formatPrice(item.product?.price)} × {item.quantity}
+                  </span>
+                  <button
+                    className={styles.removeBtn}
+                    onClick={(e) => handleRemoveItem(e, item._id, item.product?.title)}
+                    disabled={removing === item._id}
+                    aria-label="Remove"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {remainingCount > 0 && (
-        <p className={styles.moreItems}>+ {remainingCount} more item{remainingCount > 1 ? 's' : ''}</p>
-      )}
-
-      <div className={styles.footer}>
-        <div className={styles.subtotal}>
-          <span>Subtotal</span>
-          <span className={styles.subtotalPrice}>{formatPrice(cart.totalPrice)}</span>
+          ))}
         </div>
-        <Link href="/cart" className={styles.viewCartBtn} onClick={onClose}>
-          View Cart
-        </Link>
-        <Link href="/checkout" className={styles.checkoutBtn} onClick={onClose}>
-          Checkout
-        </Link>
+
+        {remainingCount > 0 && (
+          <p className={styles.moreItems}>+ {remainingCount} more item{remainingCount > 1 ? 's' : ''}</p>
+        )}
+
+        <div className={styles.footer}>
+          <div className={styles.subtotal}>
+            <span>Subtotal</span>
+            <span className={styles.subtotalPrice}>{formatPrice(cart.totalPrice)}</span>
+          </div>
+          <Link href="/cart" className={styles.viewCartBtn} onClick={onClose}>
+            View Cart
+          </Link>
+          <Link href="/checkout" className={styles.checkoutBtn} onClick={onClose}>
+            Checkout
+          </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

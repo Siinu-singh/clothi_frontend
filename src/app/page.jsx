@@ -46,10 +46,22 @@ const categories = [
 
 // ── Slider images ───────────────────────────────────────────────
 const sliderImages = [
-  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776509044/WEBSITE_BANNERS_gvcuq6.png',
-  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
-  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508755/DRYFIT_image_iy9bke.png',
-  'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508907/Zen-G_by_clothi_1_tkltka.png',
+  {
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776509044/WEBSITE_BANNERS_gvcuq6.png',
+    link: '/catalog',
+  },
+  {
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
+    link: '/catalog?category=POLO',
+  },
+  {
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508755/DRYFIT_image_iy9bke.png',
+    link: '/catalog?category=DRY-FIT',
+  },
+  {
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508907/Zen-G_by_clothi_1_tkltka.png',
+    link: '/catalog?category=OVERSIZE',
+  },
 ];
 
 export default function Home() {

@@ -1,20 +1,20 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Heart } from 'lucide-react';
+import { Filter, ArrowUpDown, X } from 'lucide-react';
 import { apiFetch } from '../../lib/api';
 import { useFavorites } from '../../context/FavoritesContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useLoginPrompt } from '../../context/LoginPromptContext';
 import { useCart } from '../../context/CartContext';
+import ProductCard from '../../components/ProductCard/ProductCard';
 
 import styles from './Catalog.module.css';
 
-export default function CatalogClient() {
+export default function CatalogClient({ categoryProp = '' }) {
   const searchParams = useSearchParams();
-  const initialCategory = searchParams.get('category') || '';
+  const initialCategory = categoryProp || searchParams.get('category') || '';
   const customTitle = searchParams.get('title');
 
   const [products, setProducts] = useState([]);
@@ -23,7 +23,9 @@ export default function CatalogClient() {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedSize, setSelectedSize] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [hoverImage, setHoverImage] = useState({});
+  // Mobile filters and sort states
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [mobileSortOpen, setMobileSortOpen] = useState(false);
 
   const { user } = useAuth();
   const { addToFavorites, removeFromFavorites, isFavorited } = useFavorites();
@@ -32,13 +34,17 @@ export default function CatalogClient() {
   const { addToCart } = useCart();
 
   useEffect(() => {
+    if (categoryProp) {
+      setSelectedCategory(categoryProp);
+      return;
+    }
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
       setSelectedCategory(categoryParam);
     } else {
       setSelectedCategory('');
     }
-  }, [searchParams]);
+  }, [searchParams, categoryProp]);
 
   useEffect(() => {
     fetchProducts();
@@ -89,14 +95,11 @@ export default function CatalogClient() {
     }
   };
 
-  const handleAddToCart = async (e, p) => {
+  const handleAddToCart = async (e, productId) => {
     e.preventDefault();
     e.stopPropagation();
-
-    const success = await addToCart(p._id, 1, p.sizes?.[0] || 'M', p.colors?.[0] || 'Default');
-    if (success) {
-      toast.success('Added to cart');
-    }
+    const success = await addToCart(productId, 1);
+    if (success) toast.success('Added to cart');
   };
 
   const formatPrice = (price) => {
@@ -116,113 +119,205 @@ export default function CatalogClient() {
 
   const currentTitle = categoryTitles[selectedCategory] || customTitle || 'Our Collection';
 
+  // Client-side filtering by selected size to ensure it operates correctly
+  const filteredProducts = products.filter(p => {
+    if (selectedSize) {
+      return p.sizes && p.sizes.includes(selectedSize);
+    }
+    return true;
+  });
+
+  // Dispatch custom event to notify Navbar of product count for collections
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const event = new CustomEvent('clothi-collection-count', {
+        detail: { count: filteredProducts.length }
+      });
+      window.dispatchEvent(event);
+    }
+  }, [filteredProducts.length]);
+
   return (
     <div className={styles.page}>
-
-
       <div className={styles.inner}>
         {/* Header */}
         <header className={styles.header}>
           <span className={styles.kicker}>Premium Essentials</span>
           <h1 className={styles.title}>{currentTitle}</h1>
-
-          {/* Collection Categories */}
-          {/* <div className={styles.collectionCategories}>
-            {categories.map((category) => (
-              <button
-                key={category}
-                className={`${styles.collectionCard} ${selectedCategory === category ? styles.active : ''}`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category || 'All'}
-              </button>
-            ))}
-          </div> */}
         </header>
 
-        {/* Product Grid - Full Width (no sidebar) */}
-        <section className={styles.gridFullWidth} aria-label="Product listing">
-          <div className={styles.gridHeader}>
-            <span className={styles.resultCount} aria-live="polite">
-              {loading ? 'Loading...' : `Showing ${products.length} results`}
-            </span>
-          </div>
+        {/* Mobile Filter & Sort Bar */}
+        <div className={styles.mobileFilterBar}>
+          <button onClick={() => setMobileFilterOpen(true)} className={styles.mobileFilterBtn}>
+            <Filter size={16} strokeWidth={1.5} />
+            <span>FILTER</span>
+          </button>
+          <div className={styles.divider} />
+          <button onClick={() => setMobileSortOpen(true)} className={styles.mobileFilterBtn}>
+            <ArrowUpDown size={16} strokeWidth={1.5} />
+            <span>SORT BY</span>
+          </button>
+        </div>
 
-          {error ? (
-            <div className={styles.errorMessage} role="alert">{error}</div>
-          ) : loading ? (
-            <div className={styles.loadingGrid} aria-busy="true" aria-label="Loading products">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className={styles.productCardSkeleton}>
-                  <div className={styles.skeletonImage}></div>
-                  <div className={styles.skeletonText}></div>
-                  <div className={styles.skeletonTextSmall}></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.productGrid}>
-              {products.map(p => (
-                <Link href={`/product/${p._id}`} key={p._id} className={styles.productCard}>
-                  <article>
-                    <div
-                      className={styles.productImage}
-                      onMouseEnter={() => setHoverImage({ ...hoverImage, [p._id]: true })}
-                      onMouseLeave={() => setHoverImage({ ...hoverImage, [p._id]: false })}
-                    >
-                      <img
-                        src={hoverImage[p._id] && p.images?.[0] ? p.images[0] : p.image}
-                        alt={`${p.title} - ${p.category} - ₹${p.price}`}
-                        loading="lazy"
-                        width={400}
-                        height={500}
-                      />
-                      {p.badge && <span className={styles.badge}>{p.badge}</span>}
-                      <button
-                        className={`${styles.wishlistBtn} ${isFavorited(p._id) ? styles.wishlistBtnActive : ''}`}
-                        onClick={(e) => handleToggleFavorite(e, p._id)}
-                        aria-label={isFavorited(p._id) ? `Remove ${p.title} from favorites` : `Add ${p.title} to favorites`}
-                        aria-pressed={isFavorited(p._id)}
-                      >
-                        <Heart
-                          size={16}
-                          strokeWidth={1.5}
-                          fill={isFavorited(p._id) ? 'currentColor' : 'none'}
-                        />
-                      </button>
+        {/* Layout containing Sidebar & Product Grid */}
+        <div className={styles.layout}>
 
-                      <button
-                        className={styles.addToCartHoverBtn}
-                        onClick={(e) => handleAddToCart(e, p)}
-                      >
-                        ADD TO CART
-                      </button>
-                    </div>
-                    <div className={styles.productInfo}>
-                      <div>
-                        <h3 className={styles.productName}>{p.title}</h3>
-                        <p className={styles.productColor}>{p.colors?.[0] || p.category}</p>
-                      </div>
-                      <div className={styles.priceWrap}>
-                        <p className={styles.productPrice}>{formatPrice(p.price)}</p>
-                        {p.oldPrice && (
-                          <p className={styles.oldPrice}><del>{formatPrice(p.oldPrice)}</del></p>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                </Link>
-              ))}
-            </div>
-          )}
+          {/* Product Grid Area */}
+          <section className={styles.grid} aria-label="Product listing">
+            <div className={styles.gridHeader}>
+              <span className={styles.resultCount} aria-live="polite">
+                {loading ? 'Loading...' : `Showing ${filteredProducts.length} results`}
+              </span>
 
-          {!loading && products.length > 0 && (
-            <div className={styles.loadMore}>
-              <button className={styles.loadMoreBtn}>DISCOVER MORE</button>
+              {/* Desktop Sort Dropdown */}
+              <div className={styles.desktopSortWrap}>
+                <select
+                  className={styles.sort}
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  aria-label="Sort products"
+                >
+                  <option value="newest">Newest Arrivals</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                </select>
+              </div>
             </div>
-          )}
-        </section>
+
+            {error ? (
+              <div className={styles.errorMessage} role="alert">{error}</div>
+            ) : loading ? (
+              <div className={styles.loadingGrid} aria-busy="true" aria-label="Loading products">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className={styles.productCardSkeleton}>
+                    <div className={styles.skeletonImage}></div>
+                    <div className={styles.skeletonText}></div>
+                    <div className={styles.skeletonTextSmall}></div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredProducts.length === 0 ? (
+              <div className={styles.noProducts} role="status">No products found matching the criteria.</div>
+            ) : (
+              <div className={styles.productGrid}>
+                {filteredProducts.map((p, index) => (
+                  <ProductCard
+                    key={p._id}
+                    product={p}
+                    isFavorited={isFavorited(p._id)}
+                    onAddToCart={(e) => handleAddToCart(e, p._id)}
+                    onFavoriteClick={(e) => handleToggleFavorite(e, p._id)}
+                    formatPrice={formatPrice}
+                    isAboveFold={index < 4}
+                  />
+                ))}
+              </div>
+            )}
+
+            {!loading && filteredProducts.length > 0 && (
+              <div className={styles.loadMore}>
+                <button className={styles.loadMoreBtn}>DISCOVER MORE</button>
+              </div>
+            )}
+          </section>
+        </div>
       </div>
+
+      {/* ========== MOBILE FILTER DRAWER ========== */}
+      {mobileFilterOpen && (
+        <div className={styles.drawerOverlay} onClick={() => setMobileFilterOpen(false)}>
+          <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <h3>FILTERS</h3>
+              <button onClick={() => setMobileFilterOpen(false)} aria-label="Close filters">
+                <X size={20} />
+              </button>
+            </div>
+            <div className={styles.drawerBody}>
+              {!categoryProp && (
+                <div className={styles.drawerGroup}>
+                  <h4>Categories</h4>
+                  <div className={styles.drawerCategories}>
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        className={`${styles.drawerTag} ${selectedCategory === cat ? styles.activeTag : ''}`}
+                        onClick={() => setSelectedCategory(cat)}
+                      >
+                        {cat || 'ALL'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {/* Size Filter */}
+              <div className={styles.drawerGroup}>
+                <h4>Sizes</h4>
+                <div className={styles.drawerSizes}>
+                  {sizes.map(sz => (
+                    <button
+                      key={sz}
+                      className={`${styles.drawerSizeBtn} ${selectedSize === sz ? styles.activeSizeBtn : ''}`}
+                      onClick={() => setSelectedSize(selectedSize === sz ? '' : sz)}
+                    >
+                      {sz}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className={styles.drawerFooter}>
+              <button
+                className={styles.drawerClearBtn}
+                onClick={() => {
+                  setSelectedCategory('');
+                  setSelectedSize('');
+                  setMobileFilterOpen(false);
+                }}
+              >
+                CLEAR ALL
+              </button>
+              <button className={styles.drawerApplyBtn} onClick={() => setMobileFilterOpen(false)}>
+                APPLY
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========== MOBILE SORT DRAWER ========== */}
+      {mobileSortOpen && (
+        <div className={styles.drawerOverlay} onClick={() => setMobileSortOpen(false)}>
+          <div className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.drawerHeader}>
+              <h3>SORT BY</h3>
+              <button onClick={() => setMobileSortOpen(false)} aria-label="Close sort select">
+                <X size={20} />
+              </button>
+            </div>
+            <div className={styles.drawerBody}>
+              <div className={styles.sortOptions}>
+                {[
+                  { label: 'Newest Arrivals', value: 'newest' },
+                  { label: 'Price: Low to High', value: 'price_asc' },
+                  { label: 'Price: High to Low', value: 'price_desc' }
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    className={`${styles.sortOptionRow} ${sortBy === opt.value ? styles.activeOptionRow : ''}`}
+                    onClick={() => {
+                      setSortBy(opt.value);
+                      setMobileSortOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -357,7 +357,7 @@ img {
 /* Navbar spacer responsive */
 @media (max-width: 767px) {
   .navbar-spacer {
-    height: 56px !important;
+    height: 88px !important;
   }
 }
 
