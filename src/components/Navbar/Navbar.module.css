@@ -74,17 +74,11 @@
   .mobileMenuBtn {
     display: flex;
   }
-  .mobileMenu {
-    top: 56px;
-  }
-  .mobileMenuOverlay {
-    top: 56px;
-  }
 }
 
 .mobileMenu {
   position: fixed;
-  top: 64px;
+  top: 100px;
   left: 0;
   width: 85%;
   max-width: 400px;
@@ -94,7 +88,7 @@
   padding: 0;
   overflow-y: auto;
   transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
 }
@@ -175,7 +169,7 @@
 
 .mobileMenuOverlay {
   position: fixed;
-  top: 64px;
+  top: 100px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -183,7 +177,7 @@
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease, top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (max-width: 1023px) {
@@ -507,6 +501,13 @@
   }
 }
 
+.iconWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .badge {
   position: absolute;
   top: 0;
@@ -514,7 +515,7 @@
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
-  background: var(--color-primary);
+  background: #dc2626;
   color: white;
   font-size: 0.625rem;
   font-weight: 700;
@@ -818,7 +819,7 @@
   position: absolute;
   top: -4px;
   right: -8px;
-  background: #000;
+  background: #dc2626;
   color: #fff;
   font-size: 0.5625rem;
   font-weight: 700;
@@ -836,4 +837,96 @@
   height: 22px;
   object-fit: contain;
   filter: brightness(0); /* Make it black or match icons */
+}
+
+/* ---- Default/Unscrolled mobile state layout adjustments ---- */
+@media (max-width: 767px) {
+  .mobileMenu,
+  .mobileMenuOverlay {
+    top: 88px;
+  }
+}
+
+/* ---- Scrolled and No Announcements state layout adjustments ---- */
+.navbar.scrolled ~ .mobileMenu,
+.navbar.noAnnouncements ~ .mobileMenu {
+  top: 64px;
+}
+.navbar.scrolled ~ .mobileMenuOverlay,
+.navbar.noAnnouncements ~ .mobileMenuOverlay {
+  top: 64px;
+}
+.navbar.scrolled ~ [class*="SearchDropdown_overlay"],
+.navbar.noAnnouncements ~ [class*="SearchDropdown_overlay"] {
+  top: 64px;
+  height: calc(100vh - 64px);
+}
+
+@media (max-width: 767px) {
+  .navbar.scrolled ~ .mobileMenu,
+  .navbar.noAnnouncements ~ .mobileMenu {
+    top: 56px;
+  }
+  .navbar.scrolled ~ .mobileMenuOverlay,
+  .navbar.noAnnouncements ~ .mobileMenuOverlay {
+    top: 56px;
+  }
+}
+
+/* Custom collection header on mobile */
+.innerCollection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  height: 56px;
+  max-width: 100%;
+  position: relative;
+}
+
+.backBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-on-surface);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.backBtn:active {
+  opacity: 0.5;
+}
+
+.collectionTitleWrap {
+  flex: 1;
+  margin-left: 0.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.collectionTitle {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--color-on-surface);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collectionCount {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--color-outline);
+}
+
+.rightActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }

@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Heart, ArrowLeft, Search as SearchIcon, X } from 'lucide-react';
+import { ArrowLeft, Search as SearchIcon, X } from 'lucide-react';
+import HeartIcon from '../HeartIcon/HeartIcon';
 import { apiFetch } from '../../lib/api';
 import { useFavorites } from '../../context/FavoritesContext';
 import styles from './SearchDropdown.module.css';
@@ -284,7 +285,7 @@ export default function SearchDropdown({ isOpen, onClose, externalSearchQuery, s
                             className={`${styles.wishlistBtn} ${isFavorited(p._id) ? styles.wishlistBtnActive : ''}`}
                             onClick={(e) => handleToggleFavorite(e, p._id)}
                           >
-                            <Heart 
+                            <HeartIcon 
                               size={18} 
                               strokeWidth={1.5} 
                               fill={isFavorited(p._id) ? 'currentColor' : 'none'}

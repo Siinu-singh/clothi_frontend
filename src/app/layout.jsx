@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import Providers from '../components/Providers/Providers';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
+import NetworkStatus from '../components/NetworkStatus/NetworkStatus';
 import { Analytics } from "@vercel/analytics/react";
 import { JsonLd } from '../components/seo/JsonLd';
 
@@ -147,7 +148,26 @@ const websiteSchema = {
   },
 };
 
-export default function RootLayout({ children }) {
+async function getAnnouncements() {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    // Cache announcements for 1 hour (3600 seconds) for better performance
+    // This allows static generation while keeping announcements reasonably fresh
+    const res = await fetch(`${baseUrl}/api/announcements`, {
+      next: { revalidate: 3600 }, // Revalidate every 1 hour (ISR)
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data?.success ? data.data : [];
+  } catch (err) {
+    console.error('Failed to pre-fetch announcements on server:', err);
+    return [];
+  }
+}
+
+export default async function RootLayout({ children }) {
+  const announcements = await getAnnouncements();
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
@@ -157,14 +177,15 @@ export default function RootLayout({ children }) {
           <a href="#main-content" className="skip-link">
             Skip to main content
           </a>
-          <Navbar />
-          <div style={{ height: '64px' }} className="navbar-spacer" />
+          <Navbar initialAnnouncements={announcements} />
+          <div style={{ height: '100px' }} className="navbar-spacer" />
           <main id="main-content">
             <ErrorBoundary>
               {children}
             </ErrorBoundary>
           </main>
           <Footer />
+          <NetworkStatus />
           <Analytics />
         </Providers>
       </body>

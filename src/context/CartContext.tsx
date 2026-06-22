@@ -5,6 +5,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type ReactNode,
 } from 'react';
 import { apiFetch } from '../lib/api';
@@ -183,16 +184,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   return (
     <CartContext.Provider
-      value={{
-        cart,
-        loading,
-        error,
-        addToCart,
-        removeFromCart,
-        updateCartItem,
-        clearCart,
-        loadCart,
-      }}
+      value={useMemo(
+        () => ({
+          cart,
+          loading,
+          error,
+          addToCart,
+          removeFromCart,
+          updateCartItem,
+          clearCart,
+          loadCart,
+        }),
+        [cart, loading, error, addToCart, removeFromCart, updateCartItem, clearCart, loadCart],
+      )}
     >
       {children}
     </CartContext.Provider>

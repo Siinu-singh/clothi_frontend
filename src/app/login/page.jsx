@@ -7,6 +7,7 @@ import { useToast } from '../../context/ToastContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';
 import { apiFetch } from '../../lib/api';
+import { sanitizeEmail, sanitizeString, isValidEmail } from '../../lib/sanitize';
 
 export default function Login() {
   const { login } = useAuth();
@@ -20,20 +21,28 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    if (!email || !password) {
+
+    const cleanEmail = sanitizeEmail(email);
+    const cleanPassword = sanitizeString(password);
+
+    if (!cleanEmail || !cleanPassword) {
       setError('Please enter email and password');
+      return;
+    }
+
+    if (!isValidEmail(cleanEmail)) {
+      setError('Please enter a valid email address');
       return;
     }
 
     setLoading(true);
     try {
-      const data = await login(email, password);
+      const data = await login(cleanEmail, cleanPassword);
       const userName = data?.user?.name || data?.user?.firstName || 'there';
       toast.success(`Welcome back, ${userName}!`);
       router.push('/');
     } catch (err) {
-      setError(err.message || "Login failed. Please check your credentials.");
+      setError(err.message || 'Login failed. Please check your credentials.');
       setPassword('');
     } finally {
       setLoading(false);

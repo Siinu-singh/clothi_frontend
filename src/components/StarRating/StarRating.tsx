@@ -7,13 +7,21 @@ import styles from './StarRating.module.css';
  * StarRating Component
  * Displays or allows selection of star ratings
  */
+interface StarRatingProps {
+  rating?: number;
+  onRate?: ((rating: number) => void) | null;
+  size?: 'small' | 'medium' | 'large';
+  interactive?: boolean;
+  showLabel?: boolean;
+}
+
 export default function StarRating({
   rating = 0,
   onRate = null,
   size = 'medium',
   interactive = false,
   showLabel = true,
-}) {
+}: StarRatingProps) {
   const [hoverRating, setHoverRating] = React.useState(0);
   const displayRating = hoverRating || rating;
 

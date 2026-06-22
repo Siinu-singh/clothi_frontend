@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
 
   const title = `${product.title} - ${product.category}`;
   const description = product.description?.slice(0, 155) || 
-    `Shop ${product.title} from CLOTHI. Premium sustainable coastal apparel. $${product.price}. Free shipping on orders over $100.`;
+    `Shop ${product.title} from CLOTHI. Premium sustainable coastal apparel. ₹${product.price}. Free shipping on orders over ₹10,000.`;
 
   return {
     title,

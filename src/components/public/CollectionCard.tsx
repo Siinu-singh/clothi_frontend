@@ -14,12 +14,12 @@ export default function CollectionCard({
 }: CollectionCardProps) {
   const mainImage = collection.images.find((img) => img.isMain) || collection.images[0];
   const discountPercent =
-    collection.discountType === 'percentage' ? collection.discountValue : 0;
+    collection.discountType === 'percentage' ? (collection.discountValue || 0) : 0;
   const finalPrice =
     collection.discountType === 'percentage'
-      ? collection.basePrice - (collection.basePrice * collection.discountValue) / 100
+      ? collection.basePrice - (collection.basePrice * (collection.discountValue || 0)) / 100
       : collection.discountType === 'fixed'
-      ? collection.basePrice - collection.discountValue
+      ? collection.basePrice - (collection.discountValue || 0)
       : collection.basePrice;
 
   const isLowStock =

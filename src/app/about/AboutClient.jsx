@@ -1,24 +1,24 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Leaf, Heart, Globe, Users, Award, Truck } from 'lucide-react';
+import { Leaf, Heart, Globe, Users, Award, Truck, Clock, Sparkles } from 'lucide-react';
 import styles from './About.module.css';
 
 const values = [
   {
-    icon: Leaf,
-    title: 'Sustainable Materials',
-    description: 'We source organic cotton, recycled fibers, and eco-friendly fabrics to minimize our environmental footprint.',
+    icon: Clock,
+    title: 'Timeless Design',
+    description: 'Every piece is created with a focus on versatility and longevity, helping you build a wardrobe that remains relevant season after season.',
   },
   {
-    icon: Heart,
-    title: 'Ethical Production',
-    description: 'Every piece is crafted in fair-trade certified facilities where workers are treated with dignity and respect.',
+    icon: Award,
+    title: 'Premium Quality',
+    description: 'From fabric selection to final finishing, we prioritize quality and attention to detail to ensure lasting comfort and confidence.',
   },
   {
-    icon: Globe,
-    title: 'Carbon Neutral',
-    description: 'We offset 100% of our carbon emissions through verified environmental projects worldwide.',
+    icon: Sparkles,
+    title: 'Thoughtful Style',
+    description: 'We design essentials that fit seamlessly into modern lifestyles—easy to wear, effortless to style, and made for everyday life.',
   },
 ];
 
@@ -31,25 +31,15 @@ const stats = [
 
 const team = [
   {
-    name: 'Sarah Chen',
-    role: 'Founder & Creative Director',
-    image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
+    name: 'Suraj Kumar',
+    role: 'Founder & CEO',
+    image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1781691704/Gemini_Generated_Image_37af2k37af2k37af_ioflx8.png',
   },
   {
-    name: 'Marcus Rivera',
-    role: 'Head of Sustainability',
+    name: 'Vidhanshu Singh',
+    role: 'Co-Founder',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    name: 'Emma Thompson',
-    role: 'Lead Designer',
-    image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  },
-  {
-    name: 'David Park',
-    role: 'Operations Director',
-    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80',
-  },
+  }
 ];
 
 const features = [
@@ -76,14 +66,14 @@ export default function AboutClient() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <Image
-          src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+          src="https://res.cloudinary.com/dsrht8rss/image/upload/v1781678778/About_Page_Banner_2_rxdvlk.png"
           alt="CLOTHI sustainable fashion brand story - coastal lifestyle apparel"
           fill
           sizes="100vw"
           className={styles.heroBg}
           priority
         />
-        <div className={styles.heroOverlay} />
+        {/* <div className={styles.heroOverlay} />
         <div className={styles.heroContent}>
           <span className={styles.heroKicker}>OUR STORY</span>
           <h1 className={styles.heroTitle}>
@@ -93,7 +83,7 @@ export default function AboutClient() {
           <p className={styles.heroSubtitle}>
             Where timeless design meets sustainable fashion
           </p>
-        </div>
+        </div> */}
       </section>
 
       {/* Story Section */}
@@ -101,24 +91,41 @@ export default function AboutClient() {
         <div className={styles.storyInner}>
           <div className={styles.storyContent}>
             <span className="section-label">THE CLOTHI STORY</span>
-            <h2 id="story-title" className={styles.storyTitle}>
-              Born from a simple belief: fashion should feel good in every way.
-            </h2>
-            <p className={styles.storyText}>
-              CLOTHI was founded in 2019 with a mission to prove that style and sustainability 
-              can coexist beautifully. What started as a small collection of thoughtfully designed 
-              essentials has grown into a movement that celebrates conscious consumption.
+
+            <p className={styles.introText}>
+              In a world where fashion moves faster than ever, many men are left with more choices but less clarity. Trends change constantly, wardrobes grow larger, yet getting dressed often feels no easier.
             </p>
+
+            <blockquote className={styles.storyQuote}>
+              &ldquo;We saw an opportunity to approach things differently.&rdquo;
+            </blockquote>
+
             <p className={styles.storyText}>
-              We partner with artisan communities across the globe, honoring traditional 
-              craftsmanship while embracing modern innovation. Every thread tells a story of 
-              dedication, every stitch represents our commitment to a better future.
+              Rather than creating clothing that follows the moment, we set out to build a brand rooted in timeless principles—simplicity, versatility, confidence, and thoughtful design.
             </p>
+
             <p className={styles.storyText}>
-              Today, CLOTHI stands at the intersection of timeless design and environmental 
-              responsibility. We&apos;re not just making clothes—we&apos;re crafting a legacy of 
-              mindful fashion that respects both people and planet.
+              At Clothi, we believe great style isn&apos;t about owning more. It&apos;s about understanding what works. The right pieces, chosen with intention, can create a wardrobe that feels effortless, adaptable, and enduring.
             </p>
+
+            <p className={styles.storyText}>
+              Every decision we make is guided by this philosophy. From design and craftsmanship to the way we communicate style, our goal is to help people move beyond trends and build confidence through clarity.
+            </p>
+
+            <div className={styles.poeticSection}>
+              <p className={styles.poeticIntro}>Because real style isn&apos;t loud.</p>
+              <ul className={styles.poeticList}>
+                <li>It&apos;s calm.</li>
+                <li>It&apos;s considered.</li>
+                <li>It&apos;s personal.</li>
+              </ul>
+              <p className={styles.poeticOutro}>And above all, it&apos;s intentional.</p>
+            </div>
+
+            <div className={styles.signatureBlock}>
+              <span className={styles.sigBrand}>Clothi.</span>
+              <span className={styles.sigTagline}>Style Through Intention.</span>
+            </div>
           </div>
           <div className={styles.storyImage}>
             <Image
@@ -145,15 +152,15 @@ export default function AboutClient() {
       </section>
 
       {/* Values Section */}
-      <section className={styles.valuesSection} aria-labelledby="values-title">
+      <section className={styles.valuesSection} aria-labelledby="philosophy-title">
         <div className={styles.valuesInner}>
           <div className={styles.valuesHeader}>
-            <span className="section-label">OUR VALUES</span>
-            <h2 id="values-title" className={styles.valuesTitle}>
-              Fashion that cares
+            <span className="section-label">OUR PHILOSOPHY</span>
+            <h2 id="philosophy-title" className={styles.valuesTitle}>
+              Style, Simplified.
             </h2>
             <p className={styles.valuesSubtitle}>
-              Sustainability isn&apos;t just a buzzword for us—it&apos;s woven into everything we do.
+              We believe great style doesn&apos;t require complexity. It requires thoughtful design, quality craftsmanship, and pieces you&apos;ll reach for every day.
             </p>
           </div>
           <div className={styles.valuesGrid}>
@@ -183,8 +190,8 @@ export default function AboutClient() {
             {team.map((member, index) => (
               <article key={index} className={styles.teamCard}>
                 <div className={styles.teamImage}>
-                  <Image 
-                    src={member.image} 
+                  <Image
+                    src={member.image}
                     alt={`${member.name} - ${member.role} at CLOTHI`}
                     sizes="(max-width: 768px) 50vw, 25vw"
                     width={400}

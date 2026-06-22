@@ -60,11 +60,8 @@ const Footer = () => {
             <h4 className={styles.colTitle}>HELPFUL LINKS</h4>
             <ul className={styles.linkList}>
               <li><Link href="/about">About Us</Link></li>
-              <li><Link href="/">Our Stores</Link></li>
               <li><Link href="/">Blogs</Link></li>
-              <li><Link href="/">Contact Us</Link></li>
-              {/* <li><Link href="/orders">Track Order</Link></li> */}
-              <li><Link href="/">Career</Link></li>
+              <li><Link href="/contact">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -72,10 +69,7 @@ const Footer = () => {
           <div className={styles.col}>
             <h4 className={styles.colTitle}>MORE</h4>
             <ul className={styles.linkList}>
-              <li><Link href="/">Shipping Policy</Link></li>
-              <li><Link href="/">Return & Exchange Policy</Link></li>
-              <li><Link href="/">Privacy Policy</Link></li>
-              <li><Link href="/">Rewards</Link></li>
+              <li><Link href="/privacy">Privacy Policy</Link></li>
             </ul>
           </div>
 

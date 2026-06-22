@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
+import ShoppingBagIcon from '../../components/ShoppingBagIcon/ShoppingBagIcon';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -60,7 +61,7 @@ export default function CartPage() {
       <div className={styles.page}>
         <div className={styles.inner}>
           <div className={styles.emptyState}>
-            <ShoppingBag size={64} strokeWidth={1} className={styles.emptyIcon} />
+            <ShoppingBagIcon size={76} strokeWidth={1} className={styles.emptyIcon} />
             <h2>Sign in to view your cart</h2>
             <p>Create an account or sign in to add items to your cart and check out.</p>
             <Link href="/login" className={styles.primaryBtn}>
@@ -92,7 +93,7 @@ export default function CartPage() {
       <div className={styles.page}>
         <div className={styles.inner}>
           <div className={styles.emptyState}>
-            <ShoppingBag size={64} strokeWidth={1} className={styles.emptyIcon} />
+            <ShoppingBagIcon size={76} strokeWidth={1} className={styles.emptyIcon} />
             <h2>Your cart is empty</h2>
             <p>Looks like you haven't added anything to your cart yet.</p>
             <Link href="/catalog" className={styles.primaryBtn}>

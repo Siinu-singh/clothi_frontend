@@ -124,10 +124,14 @@
 
 /* ======== SHOP BY SECTION ======== */
 .sectionLabel {
-  margin-bottom: 2.5rem;
-  padding-left: 2rem;
-  font-size: 1.2rem;
-  font-weight: 600;
+  margin-bottom: 2rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.75rem;
+  font-weight: 400; /* Bebas Neue is bold by default */
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #4b4435; /* Dark brown/olive color from mockup */
+  text-transform: uppercase;
 }
 
 .arrivalsSection {
@@ -142,45 +146,63 @@
 }
 .tabRow {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: 2rem;
-  border-bottom: 1px solid var(--color-surface-high);
   padding-bottom: 0.5rem;
   padding-left: 2rem;
   padding-right: 2rem;
+  position: relative;
 }
 .tabs {
   display: flex;
-  gap: 0;
+  gap: 0.75rem; /* Gap between the boxes */
 }
-.tab,
-.tabActive {
-  background: transparent;
-  border: none;
+.tab {
+  background: var(--color-white);
+  border: 1px solid var(--color-outline-variant); /* Light beige-gray border */
+  font-family: var(--font-body);
   font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-outline);
-  padding: 0.5rem 1.5rem 0.75rem;
+  font-weight: 500;
+  color: var(--color-outline); /* Muted gray text */
+  padding: 0.625rem 1.5rem;
   cursor: pointer;
-  position: relative;
-  transition: color 0.2s ease;
-}
-.tabActive {
-  color: var(--color-on-surface);
-}
-.tabActive::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--color-on-surface);
-  border-radius: 3px 3px 0 0;
+  border-radius: 0; /* Perfectly sharp edges */
+  transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 .tab:hover {
+  border-color: var(--color-outline);
   color: var(--color-on-surface);
+}
+.tabActive {
+  background: #4b4435; /* Dark brown background from image */
+  border: 1px solid #4b4435;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-white); /* White text */
+  padding: 0.625rem 1.5rem;
+  cursor: pointer;
+  border-radius: 0; /* Perfectly sharp edges */
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.viewAllLink {
+  position: absolute;
+  right: 2rem;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+.viewAllLink:hover {
+  color: var(--color-primary);
 }
 
 /* ======== PRODUCT GRID ======== */
@@ -206,6 +228,46 @@
 }
 
 @media (max-width: 640px) {
+  .arrivalsInner {
+    padding: 0 1rem;
+  }
+
+  .sectionLabel {
+    padding-left: 0;
+    margin-bottom: 1.5rem;
+    font-size: 2.25rem;
+  }
+
+  .tabRow {
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabRow::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tabs {
+    flex-wrap: nowrap;
+  }
+
+  .tab,
+  .tabActive {
+    padding: 0.5rem 1rem 0.75rem;
+  }
+
+  .viewAllLink {
+    position: static;
+    margin-left: auto;
+    padding-left: 1rem;
+    flex-shrink: 0;
+  }
+
   .productGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem 0.5rem;
@@ -219,6 +281,39 @@
   padding: 3rem;
   color: var(--color-on-surface-variant);
   font-size: 1rem;
+}
+
+.errorFallback {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-on-surface);
+}
+
+.retryBtn {
+  margin-top: 1rem;
+  padding: 0.625rem 1.75rem;
+  background: var(--color-on-surface);
+  color: var(--color-bg);
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: opacity 0.2s;
+}
+
+.retryBtn:hover { opacity: 0.8; }
+
+.sectionSkeleton {
+  width: 100%;
+  min-height: 200px;
+  background: var(--color-surface-dim);
+  animation: shimmer 1.5s infinite;
+  background: linear-gradient(90deg, var(--color-surface-dim) 25%, var(--color-surface-high) 50%, var(--color-surface-dim) 75%);
+  background-size: 200% 100%;
 }
 
 /* ======== LOADING SKELETONS ======== */

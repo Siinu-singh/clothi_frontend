@@ -42,7 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const addToast = useCallback(
-    ({ type = 'info', message, duration = 4000 }: { type?: ToastItem['type']; message: string; duration?: number }) => {
+    ({ type = 'info', message, duration = 2000 }: { type?: ToastItem['type']; message: string; duration?: number }) => {
       const id = ++toastIdCounter;
       setToasts((prev) => [...prev, { id, type, message, duration }]);
       return id;

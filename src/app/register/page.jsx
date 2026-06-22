@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './Register.module.css';
 import { apiFetch } from '../../lib/api';
+import { sanitizeString, sanitizeEmail, isValidEmail, isValidPassword } from '../../lib/sanitize';
 import { useToast } from '../../context/ToastContext';
 import { GoogleLogin } from '@react-oauth/google';
 import { useState } from 'react';

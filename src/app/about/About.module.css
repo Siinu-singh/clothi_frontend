@@ -7,8 +7,8 @@
 .hero {
   position: relative;
   width: 100%;
-  height: 70vh;
-  min-height: 500px;
+  height: 60vh;
+  min-height: 400px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -21,6 +21,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top;
 }
 
 .heroOverlay {
@@ -119,6 +120,102 @@
 
 .storyText:last-of-type {
   margin-bottom: 0;
+}
+
+.introText {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--color-on-surface);
+  opacity: 0.9;
+  margin-bottom: 2rem;
+  font-weight: 300;
+}
+
+.storyQuote {
+  font-family: var(--font-heading);
+  font-size: clamp(1.25rem, 2.5vw, 1.625rem);
+  font-style: italic;
+  color: var(--color-on-surface);
+  margin: 2.5rem 0;
+  font-weight: 300;
+  border-left: 2px solid var(--color-on-surface);
+  padding-left: 1.5rem;
+  line-height: 1.4;
+}
+
+.poeticSection {
+  margin: 3rem 0;
+  padding: 2rem 0;
+  border-top: 1px solid var(--color-surface-high);
+  border-bottom: 1px solid var(--color-surface-high);
+}
+
+.poeticIntro {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.poeticList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.poeticList li {
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+  font-style: italic;
+  color: var(--color-on-surface);
+  padding-left: 2.25rem;
+  position: relative;
+  line-height: 1.2;
+}
+
+.poeticList li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--color-outline);
+}
+
+.poeticOutro {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.signatureBlock {
+  margin-top: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sigBrand {
+  font-family: var(--font-heading);
+  font-size: 1.875rem;
+  font-weight: 400;
+  color: var(--color-on-surface);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.sigTagline {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-outline);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
 }
 
 .storyImage {
@@ -242,8 +339,8 @@
 }
 
 .valueCard:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .valueIcon {
@@ -298,27 +395,16 @@
 }
 
 .teamGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
-}
-
-@media (max-width: 968px) {
-  .teamGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 480px) {
-  .teamGrid {
-    grid-template-columns: 1fr;
-    max-width: 300px;
-    margin: 0 auto;
-  }
+  display: flex;
+  justify-content: center;
+  gap: 3rem 4rem;
+  flex-wrap: wrap;
 }
 
 .teamCard {
   text-align: center;
+  flex: 0 1 250px;
+  width: 100%;
 }
 
 .teamImage {

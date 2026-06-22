@@ -6,9 +6,9 @@ import { useToast } from '@/context/ToastContext';
 import Link from 'next/link';
 import { ArrowLeft, Package, Save } from 'lucide-react';
 import styles from '../AdminProductForm.module.css';
+import { sanitizeString } from '@/lib/sanitize';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-
 async function apiFetch(endpoint: string, options: any = {}) {
   const headers: any = {};
   if (options.body) headers['Content-Type'] = 'application/json';
@@ -17,7 +17,12 @@ async function apiFetch(endpoint: string, options: any = {}) {
     const token = localStorage.getItem('token');
     if (token) headers['Authorization'] = `Bearer ${token}`;
   }
-  const response = await fetch(`${API_BASE}/api${endpoint}`, { ...options, headers });
+  // Use NEXT_PUBLIC_API_URL from environment, validate it's a trusted domain
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  if (!apiUrl.startsWith('http://localhost') && !apiUrl.startsWith('https://')) {
+    throw new Error('Invalid API URL configuration');
+  }
+  const response = await fetch(`${apiUrl}/api${endpoint}`, { ...options, headers });
   
   if (!response.ok) {
     let errorMsg = `HTTP error! status: ${response.status}`;
@@ -74,18 +79,18 @@ export default function CreateProductPage() {
     }
 
     const productData = {
-      title: form.title,
-      description: form.description,
+      title: sanitizeString(form.title),
+      description: sanitizeString(form.description),
       price: parseFloat(form.price),
       ...(form.oldPrice && { oldPrice: parseFloat(form.oldPrice) }),
       image: form.image,
       ...(form.images && { images: form.images.split(',').map(s => s.trim()).filter(Boolean) }),
       category: form.category,
       ...(form.badge && { badge: form.badge }),
-      colors: form.colors ? form.colors.split(',').map(s => s.trim()).filter(Boolean) : [],
+      colors: form.colors ? form.colors.split(',').map(s => sanitizeString(s.trim())).filter(Boolean) : [],
       sizes: form.sizes ? form.sizes.split(',').map(s => s.trim()).filter(Boolean) : SIZES,
-      ...(form.materials && { materials: form.materials }),
-      ...(form.sizeGuide && { sizeGuide: form.sizeGuide }),
+      ...(form.materials && { materials: sanitizeString(form.materials) }),
+      ...(form.sizeGuide && { sizeGuide: sanitizeString(form.sizeGuide) }),
     };
 
     try {
@@ -152,6 +157,7 @@ export default function CreateProductPage() {
                     required
                     className={styles.input}
                     placeholder="Product name"
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -165,6 +171,7 @@ export default function CreateProductPage() {
                     onChange={handleChange}
                     className={styles.textarea}
                     placeholder="Product description"
+                    autoComplete="off"
                   />
                 </div>
               </div>
@@ -270,6 +277,7 @@ export default function CreateProductPage() {
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="Red, Blue, Green"
+                  autoComplete="off"
                 />
               </div>
 
@@ -294,6 +302,7 @@ export default function CreateProductPage() {
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="100% Cotton"
+                  autoComplete="off"
                 />
               </div>
 
@@ -306,6 +315,7 @@ export default function CreateProductPage() {
                   onChange={handleChange}
                   className={styles.input}
                   placeholder="True to size"
+                  autoComplete="off"
                 />
               </div>
             </div>

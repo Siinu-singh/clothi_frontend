@@ -4,8 +4,18 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+interface Product {
+  _id: string;
+  image?: string;
+  title: string;
+  price: number;
+  oldPrice?: number;
+  badge?: string;
+  colors?: string[];
+}
+
 export default function NewArrivals({ limit = 8 }) {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -16,7 +26,7 @@ export default function NewArrivals({ limit = 8 }) {
   const loadNewArrivals = async () => {
     try {
       const token = localStorage.getItem('token');
-      const headers = {};
+      const headers: Record<string, string> = {};
       if (token) headers['Authorization'] = `Bearer ${token}`;
       
       const response = await fetch(`${API_BASE}/api/products?sort=new&limit=${limit}`, { headers });
@@ -131,7 +141,7 @@ export default function NewArrivals({ limit = 8 }) {
                     </span>
                   )}
                 </div>
-                {product.colors?.length > 0 && (
+                {product.colors && product.colors.length > 0 && (
                   <div className="flex gap-1 mt-2">
                     {product.colors.slice(0, 4).map((color, i) => (
                       <span 

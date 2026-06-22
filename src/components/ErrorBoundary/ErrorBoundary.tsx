@@ -1,22 +1,51 @@
 'use client';
 import React from 'react';
 
-export default class ErrorBoundary extends React.Component {
-  constructor(props) {
+// Error tracking (can be connected to Sentry, LogRocket, etc.)
+class ErrorTracker {
+  private isProduction = process.env.NODE_ENV === 'production';
+
+  captureException(error: Error, context?: Record<string, unknown>) {
+    // Log to console in development
+    if (!this.isProduction) {
+      console.error('[ErrorBoundary]', error, context);
+    }
+    // In production, send to error tracking service
+    // Example: Sentry.captureException(error, { extra: context });
+  }
+}
+
+const errorTracker = new ErrorTracker();
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}
+
+export default class ErrorBoundary extends React.Component<
+  ErrorBoundaryProps,
+  { hasError: boolean; error: Error | null; errorId: string }
+> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, errorId: '' };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error, errorInfo) {
-    console.error('[ErrorBoundary] Caught error:', error, errorInfo);
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    const errorId = `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    this.setState({ errorId });
+    errorTracker.captureException(error, {
+      errorId,
+      componentStack: errorInfo.componentStack,
+    });
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null });
+    this.setState({ hasError: false, error: null, errorId: '' });
   };
 
   render() {
@@ -39,6 +68,9 @@ export default class ErrorBoundary extends React.Component {
             <p style={styles.description}>
               We encountered an unexpected error. Please try again or refresh the page.
             </p>
+            {this.state.errorId && (
+              <p style={styles.errorId}>Error ID: {this.state.errorId}</p>
+            )}
             <div style={styles.actions}>
               <button onClick={this.handleReset} style={styles.retryBtn}>
                 Try Again
@@ -56,7 +88,7 @@ export default class ErrorBoundary extends React.Component {
   }
 }
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -86,6 +118,12 @@ const styles = {
     color: 'var(--color-outline, #666)',
     lineHeight: 1.6,
     marginBottom: '2rem',
+  },
+  errorId: {
+    fontSize: '0.75rem',
+    color: 'var(--color-outline, #999)',
+    marginBottom: '1.5rem',
+    fontFamily: 'monospace',
   },
   actions: {
     display: 'flex',

@@ -85,19 +85,17 @@ const SocialFeed = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  const handleVideoMouseEnter = event => {
-    const video = event.currentTarget;
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.catch === 'function') {
-      playPromise.catch(() => { });
-    }
-  };
-
-  const handleVideoMouseLeave = event => {
-    const video = event.currentTarget;
-    video.pause();
-    video.currentTime = 0;
-  };
+  useEffect(() => {
+    // Ensure all videos play continuously on mount
+    Object.values(videoRefs.current).forEach(video => {
+      if (video) {
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => { });
+        }
+      }
+    });
+  }, []);
 
   const handleToggleMute = postId => {
     const currentMuted = mutedById[postId] ?? true;
@@ -132,7 +130,7 @@ const SocialFeed = () => {
             <stop offset="100%" stopColor="#bc1888" />
           </linearGradient>
         </svg>
-        <div className={styles.pulseBadgeWrapper}>
+        {/* <div className={styles.pulseBadgeWrapper}>
           <div className={styles.pulseBadge}>
             {(() => {
               const CurrentIcon = handles[handleIndex].icon;
@@ -142,7 +140,7 @@ const SocialFeed = () => {
               @{typedText}<span className={styles.cursor}>|</span>
             </span>
           </div>
-        </div>
+        </div> */}
         <div className={styles.socialTitleWrapper}>
           <span className={styles.line} />
           <h2 className={styles.socialTitle}>CATCH US ON SOCIAL</h2>
@@ -164,15 +162,18 @@ const SocialFeed = () => {
                   <video
                     className={styles.videoImg}
                     src={post.videoSrc}
+                    autoPlay
                     loop
                     playsInline
-                    preload="metadata"
-                    onMouseEnter={handleVideoMouseEnter}
-                    onMouseLeave={handleVideoMouseLeave}
+                    preload="auto"
                     muted={isMuted}
                     ref={node => {
                       if (node) {
                         videoRefs.current[post.id] = node;
+                        const playPromise = node.play();
+                        if (playPromise && typeof playPromise.catch === 'function') {
+                          playPromise.catch(() => { });
+                        }
                       } else {
                         delete videoRefs.current[post.id];
                       }

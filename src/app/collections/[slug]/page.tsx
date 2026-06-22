@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { getCollectionBySlug, getCollections } from '@/lib/api-collections';
-import CollectionDetail from '@/components/public/CollectionDetail';
+import CatalogClient from '@/app/catalog/CatalogClient';
 import { JsonLd, generateBreadcrumbSchema } from '@/components/seo/JsonLd';
 
 const SITE_URL = 'https://clothi.co.in';
@@ -29,28 +30,60 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const resolvedParams = await params;
   try {
     const response = await getCollectionBySlug(resolvedParams.slug);
-    const collection = response.data;
+    let collection = response.data;
     
     if (!collection) {
-      return {
-        title: 'Collection Not Found',
-        description: 'The requested collection could not be found.',
-        robots: { index: false },
+      const slugLower = resolvedParams.slug.toLowerCase();
+      const fallbacks: Record<string, { name: string; description: string }> = {
+        'polo': {
+          name: 'The Crown Series (Polo)',
+          description: 'Explore the Crown Series premium Polo T-Shirts collection at CLOTHI.'
+        },
+        'oversize': {
+          name: 'Zen-G (Oversize)',
+          description: 'Explore Zen-G by Clothi oversized T-Shirts collection at CLOTHI.'
+        },
+        'casual': {
+          name: 'Prime Basics (Casual)',
+          description: 'Explore Prime Basics casual T-Shirts collection at CLOTHI.'
+        },
+        'dry-fit': {
+          name: 'Motion X (Dry-Fit)',
+          description: 'Explore Motion X Dry-Fit performance T-Shirts collection at CLOTHI.'
+        },
       };
+
+      if (fallbacks[slugLower]) {
+        collection = {
+          name: fallbacks[slugLower].name,
+          description: fallbacks[slugLower].description,
+          slug: resolvedParams.slug,
+        } as any;
+      } else {
+        const formattedName = resolvedParams.slug
+          .split('-')
+          .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+        collection = {
+          name: formattedName,
+          description: `Explore the ${formattedName} collection at CLOTHI.`,
+          slug: resolvedParams.slug,
+        } as any;
+      }
     }
 
     const title = `${collection.name} Collection — Curated Fashion`;
     const description = collection.description?.slice(0, 155) || 
       `Browse the ${collection.name} collection at CLOTHI. Premium sustainable coastal fashion. Free shipping on orders over $100.`;
-    const mainImage = collection.images?.find(img => img.isMain)?.url || collection.images?.[0]?.url || '/og-image.png';
+    const mainImage = (collection as any).images?.find((img: any) => img.isMain)?.url || (collection as any).images?.[0]?.url || '/og-image.png';
 
     return {
       title,
       description,
       keywords: [
         collection.name,
-        collection.category,
-        ...(collection.tags || []),
+        (collection as any).category || '',
+        ...((collection as any).tags || []),
         'sustainable fashion',
         'CLOTHI collection',
       ],
@@ -90,30 +123,58 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CollectionDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
   let collection = null;
-  let errorMsg = null;
 
   try {
     const response = await getCollectionBySlug(resolvedParams.slug);
     collection = response.data;
   } catch (err: any) {
     console.error('Failed to load collection in page component:', err);
-    errorMsg = err.message || 'Failed to load collection';
   }
 
-  if (errorMsg || !collection) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-white">
-        <div className="text-center px-4">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Collection Not Found</h1>
-          <p className="text-gray-500 mb-6">
-            {errorMsg || 'The collection you are looking for does not exist or has been removed.'}
-          </p>
-          <Link href="/collections" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-            Back to collections
-          </Link>
-        </div>
-      </div>
-    );
+  if (!collection) {
+    const slugLower = resolvedParams.slug.toLowerCase();
+    const fallbacks: Record<string, { name: string; category: string; description: string }> = {
+      'polo': {
+        name: 'The Crown Series (Polo)',
+        category: 'POLO',
+        description: 'Explore the Crown Series premium Polo T-Shirts collection at CLOTHI.'
+      },
+      'oversize': {
+        name: 'Zen-G (Oversize)',
+        category: 'OVERSIZE',
+        description: 'Explore Zen-G by Clothi oversized T-Shirts collection at CLOTHI.'
+      },
+      'casual': {
+        name: 'Prime Basics (Casual)',
+        category: 'CASUAL',
+        description: 'Explore Prime Basics casual T-Shirts collection at CLOTHI.'
+      },
+      'dry-fit': {
+        name: 'Motion X (Dry-Fit)',
+        category: 'DRY-FIT',
+        description: 'Explore Motion X Dry-Fit performance T-Shirts collection at CLOTHI.'
+      },
+    };
+
+    if (fallbacks[slugLower]) {
+      collection = {
+        name: fallbacks[slugLower].name,
+        category: fallbacks[slugLower].category,
+        description: fallbacks[slugLower].description,
+        slug: resolvedParams.slug,
+      };
+    } else {
+      const formattedName = resolvedParams.slug
+        .split('-')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+      collection = {
+        name: formattedName,
+        category: resolvedParams.slug.toUpperCase(),
+        description: `Explore the ${formattedName} collection at CLOTHI.`,
+        slug: resolvedParams.slug,
+      };
+    }
   }
 
   // Generate dynamic breadcrumb schema
@@ -126,7 +187,14 @@ export default async function CollectionDetailPage({ params }: PageProps) {
   return (
     <>
       {breadcrumbSchema && <JsonLd data={breadcrumbSchema} />}
-      <CollectionDetail collection={collection} />
+      <Suspense fallback={
+        <div className="flex justify-center items-center min-h-screen bg-white">
+          <p className="text-gray-500">Loading collection...</p>
+        </div>
+      }>
+        <CatalogClient categoryProp={collection.category} />
+      </Suspense>
     </>
   );
 }
+
