@@ -39,7 +39,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "ts-jest": "^29.1.2",
     "@playwright/test": "^1.48.2",
-    "eslint": "^8.57.0",
+    "eslint": "^9.0.0",
     "eslint-config-next": "^16.2.4",
     "prettier": "^3.3.3",
     "identity-obj-proxy": "^3.0.0"
