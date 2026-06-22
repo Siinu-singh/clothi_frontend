@@ -21,14 +21,25 @@
   height: 100%;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), visibility 0.5s;
+  transition: opacity 0.8s ease-in-out, visibility 0.8s;
   z-index: 1;
+  overflow: hidden;
 }
 
 .slide.active {
   opacity: 1;
   visibility: visible;
   z-index: 2;
+}
+
+/* Zoom out transition on active slide image */
+.slide img {
+  transform: scale(1.12); /* Start slightly zoomed in */
+  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1); /* Smooth cinematic transition */
+}
+
+.slide.active img {
+  transform: scale(1); /* Zoom out to normal scale when active */
 }
 
 /* ========== NAVIGATION DOTS ========== */

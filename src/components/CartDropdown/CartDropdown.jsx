@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Trash2, ShoppingBag } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import ShoppingBagIcon from '../ShoppingBagIcon/ShoppingBagIcon';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -40,7 +41,7 @@ export default function CartDropdown({ isOpen, onClose }) {
         <div className={styles.overlay} onClick={onClose} />
         <div className={styles.dropdown}>
           <div className={styles.emptyState}>
-            <ShoppingBag size={32} strokeWidth={1} className={styles.emptyIcon} />
+            <ShoppingBagIcon size={38} strokeWidth={1} className={styles.emptyIcon} />
             <p>Sign in to view your cart</p>
             <Link href="/login" className={styles.signInBtn} onClick={onClose}>
               Sign In
@@ -73,7 +74,7 @@ export default function CartDropdown({ isOpen, onClose }) {
         <div className={styles.overlay} onClick={onClose} />
         <div className={styles.dropdown}>
           <div className={styles.emptyState}>
-            <ShoppingBag size={32} strokeWidth={1} className={styles.emptyIcon} />
+            <ShoppingBagIcon size={38} strokeWidth={1} className={styles.emptyIcon} />
             <p>Your cart is empty</p>
             <Link href="/catalog" className={styles.shopBtn} onClick={onClose}>
               Start Shopping

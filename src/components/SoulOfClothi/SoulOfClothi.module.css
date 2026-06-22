@@ -100,7 +100,6 @@
   max-width: 500px;
   margin: 0 auto;
   border-radius: 0;
-  overflow: hidden;
 }
 .image {
   width: 100%;
@@ -172,4 +171,71 @@
   height: 6rem;
   width: auto;
   object-fit: contain;
+}
+
+.heritageCard {
+  position: absolute;
+  bottom: -0.75rem;
+  right: -1.25rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.08) 100%);
+  backdrop-filter: blur(50px) saturate(130%);
+  -webkit-backdrop-filter: blur(50px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 1.5rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  z-index: 5;
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.4),
+    0 20px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.heritageKicker {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+}
+
+.heritageTitle {
+  color: #000000;
+  font-size: 1.625rem;
+  font-weight: 400;
+  font-family: var(--font-headline), Georgia, serif;
+  margin: 0;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+
+@media (max-width: 768px) {
+  .heritageCard {
+    bottom: -0.35rem;
+    right: -1rem;
+    padding: 1.25rem 1.75rem;
+  }
+  .heritageTitle {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heritageCard {
+    bottom: -0.15rem;
+    right: -0.5rem;
+    padding: 1rem 1.25rem;
+  }
+  .heritageTitle {
+    font-size: 1.125rem;
+  }
+  .heritageKicker {
+    font-size: 0.5625rem;
+    letter-spacing: 0.2em;
+  }
 }

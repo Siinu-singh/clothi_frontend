@@ -259,9 +259,7 @@
   z-index: 2;
 }
 
-.wishlistBtn:hover {
-  transform: scale(1.1);
-}
+
 
 .wishlistBtnActive {
   color: #ff3366;

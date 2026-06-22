@@ -17,6 +17,10 @@ export default function SoulOfClothi() {
               style={{ objectFit: 'cover' }}
               quality={80}
             />
+            <div className={styles.heritageCard}>
+              <span className={styles.heritageKicker}>THE ESSENCE</span>
+              <p className={styles.heritageTitle}>Style Takes Understanding</p>
+            </div>
           </div>
         </div>
         <div className={styles.right}>

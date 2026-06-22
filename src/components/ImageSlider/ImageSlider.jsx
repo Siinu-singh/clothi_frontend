@@ -59,6 +59,7 @@ export default function ImageSlider({ images = [] }) {
                 sizes="100vw"
                 style={{ objectFit: 'cover', objectPosition: 'center' }}
                 priority={index === 0}
+                quality={80}
               />
               {/* Text Overlay - First slide */}
               {index === 0 && (

@@ -24,7 +24,7 @@ const TAGS = [
 ];
 
 export default function CollectionsClient() {
-  const { collections, loading, loadCollections, pagination } = useCollection() as any;
+  const { collections, loading, loadCollections, pagination } = useCollection();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

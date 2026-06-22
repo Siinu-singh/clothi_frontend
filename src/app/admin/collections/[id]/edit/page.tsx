@@ -12,9 +12,9 @@ export default function EditCollectionPage() {
   const params = useParams();
   const collectionId = params.id as string;
 
-  const { user, loading: authLoading } = useAuth() as any;
-  const { collections, loadAllCollections, handleUpdateCollection } = useCollection() as any;
-  const { toast } = useToast() as any;
+  const { user, loading: authLoading } = useAuth();
+  const { collections, loadAllCollections, handleUpdateCollection } = useCollection();
+  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [loadingCollection, setLoadingCollection] = useState(true);
 

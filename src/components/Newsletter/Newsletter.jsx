@@ -1,8 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import styles from './Newsletter.module.css';
+import { sanitizeEmail } from '../../lib/sanitize';
 
 const Newsletter = () => {
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    const sanitized = sanitizeEmail(email);
+    // Submit sanitized email
+    setEmail('');
+  };
   return (
     <section className={styles.section}>
       <div className={styles.container}>
@@ -17,10 +26,18 @@ const Newsletter = () => {
             </div>
           </div>
           <div className={styles.newsletterRight}>
-            <div className={styles.emailRow}>
-              <input type="email" placeholder="your@email.com" className={styles.emailInput} />
-              <button className={styles.emailBtn}><ChevronRight size={20} /></button>
-            </div>
+            <form className={styles.emailRow} onSubmit={handleSubscribe}>
+              <input
+                type="email"
+                placeholder="your@email.com"
+                className={styles.emailInput}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+              <button type="submit" className={styles.emailBtn}><ChevronRight size={20} /></button>
+            </form>
           </div>
         </div>
       </div>

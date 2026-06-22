@@ -1,7 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Heart, ShoppingBag, Trash2, Share2 } from 'lucide-react';
+import { Trash2, Share2 } from 'lucide-react';
+import HeartIcon from '../../components/HeartIcon/HeartIcon';
+import ShoppingBagIcon from '../../components/ShoppingBagIcon/ShoppingBagIcon';
 import { apiFetch } from '../../lib/api';
 import { useFavorites } from '../../context/FavoritesContext';
 import { useCart } from '../../context/CartContext';
@@ -67,7 +69,7 @@ export default function FavoritesPage() {
     setActionLoading(productId);
     try {
       await removeFromFavorites(productId);
-      toast.success(`${productName} removed from favorites`);
+      toast.success('Product has been successfully removed from your wishlist.');
     } catch (err) {
       toast.error('Failed to remove from favorites');
     } finally {
@@ -115,7 +117,7 @@ export default function FavoritesPage() {
       <div className={styles.page}>
         <div className={styles.inner}>
           <div className={styles.emptyState}>
-            <Heart size={64} strokeWidth={1} className={styles.emptyIcon} />
+            <HeartIcon size={64} strokeWidth={1} className={styles.emptyIcon} />
             <h2>Sign in to view favorites</h2>
             <p>Create an account or sign in to save your favorite items and access them anytime.</p>
             <Link href="/login" className={styles.primaryBtn}>
@@ -147,7 +149,7 @@ export default function FavoritesPage() {
       <div className={styles.page}>
         <div className={styles.inner}>
           <div className={styles.emptyState}>
-            <Heart size={64} strokeWidth={1} className={styles.emptyIcon} />
+            <HeartIcon size={64} strokeWidth={1} className={styles.emptyIcon} />
             <h2>No favorites yet</h2>
             <p>Start exploring and save items you love by tapping the heart icon.</p>
             <Link href="/catalog" className={styles.primaryBtn}>
@@ -196,7 +198,7 @@ export default function FavoritesPage() {
                     onClick={() => handleAddToCart(product)}
                     disabled={actionLoading === product._id}
                   >
-                    <ShoppingBag size={14} />
+                    <ShoppingBagIcon size={17} />
                     {actionLoading === product._id ? 'Adding...' : 'Add to Cart'}
                   </button>
                   <button 

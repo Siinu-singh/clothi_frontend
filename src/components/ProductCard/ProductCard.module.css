@@ -32,9 +32,8 @@
   right: 0.75rem;
   width: 32px;
   height: 32px;
-  border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.85);
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +41,9 @@
   opacity: 0;
   transition:
     opacity 0.2s ease,
-    background 0.2s ease;
+    transform 0.2s ease;
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .productCard:hover .wishlistBtn {
@@ -50,7 +51,7 @@
 }
 
 .wishlistBtn:hover {
-  background: white;
+  background: transparent;
 }
 
 .addToCartBtn {
@@ -101,8 +102,26 @@
   -webkit-backdrop-filter: blur(12px);
 }
 
-.addToCartBtn:active {
-  transform: scale(0.98) translateY(0);
+.badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  background: rgba(255,255,255,0.9);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.wishlistBtnActive {
+  color: #dc2626;
+  filter: drop-shadow(0 2px 4px rgba(220, 38, 38, 0.4));
+  opacity: 1 !important;
 }
 
 .productName {
@@ -125,3 +144,4 @@
   height: 1.125rem;
   line-height: 1.125rem;
 }
+

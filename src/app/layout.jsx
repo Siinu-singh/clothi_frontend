@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar/Navbar';
 import Footer from '../components/Footer/Footer';
 import Providers from '../components/Providers/Providers';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
+import NetworkStatus from '../components/NetworkStatus/NetworkStatus';
 import { Analytics } from "@vercel/analytics/react";
 import { JsonLd } from '../components/seo/JsonLd';
 
@@ -150,8 +151,11 @@ const websiteSchema = {
 async function getAnnouncements() {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    // Use no-cache in server-side fetch to ensure fresh announcements
-    const res = await fetch(`${baseUrl}/api/announcements`, { cache: 'no-store' });
+    // Cache announcements for 1 hour (3600 seconds) for better performance
+    // This allows static generation while keeping announcements reasonably fresh
+    const res = await fetch(`${baseUrl}/api/announcements`, {
+      next: { revalidate: 3600 }, // Revalidate every 1 hour (ISR)
+    });
     if (!res.ok) return [];
     const data = await res.json();
     return data?.success ? data.data : [];
@@ -181,6 +185,7 @@ export default async function RootLayout({ children }) {
             </ErrorBoundary>
           </main>
           <Footer />
+          <NetworkStatus />
           <Analytics />
         </Providers>
       </body>

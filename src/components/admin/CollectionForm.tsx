@@ -6,6 +6,7 @@ import PricingSection from './PricingSection';
 import InventorySection from './InventorySection';
 import SeoSection from './SeoSection';
 import MetadataSection from './MetadataSection';
+import { sanitizeString } from '@/lib/sanitize';
 
 interface CollectionFormProps {
   initialData?: Collection;
@@ -86,7 +87,14 @@ export default function CollectionForm({
     }
 
     try {
-      await onSubmit(formData);
+      const sanitizedData = {
+        ...formData,
+        name: sanitizeString(formData.name),
+        description: sanitizeString(formData.description),
+        seoTitle: sanitizeString(formData.seoTitle),
+        seoDescription: sanitizeString(formData.seoDescription),
+      };
+      await onSubmit(sanitizedData);
     } catch (err) {
       console.error('Form submission error:', err);
     }
@@ -115,6 +123,7 @@ export default function CollectionForm({
               }
               placeholder="e.g., Summer Vibes Collection"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="off"
             />
             {errors.name && <p className="text-red-600 text-sm mt-1">{errors.name}</p>}
           </div>
@@ -156,6 +165,7 @@ export default function CollectionForm({
               placeholder="Collection description"
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="off"
             />
           </div>
         </div>

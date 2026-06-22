@@ -5,6 +5,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { getFirebaseAuth, RecaptchaVerifier, signInWithPhoneNumber } from '../../lib/firebase';
 import { apiFetch } from '../../lib/api';
 import { useAuth } from '../../context/AuthContext';
+import { sanitizeString, sanitizeEmail } from '../../lib/sanitize';
 import styles from './LoginModal.module.css';
 
 // ─── Country codes ────────────────────────────────────────────────
@@ -230,9 +231,9 @@ export default function LoginModal({ isOpen, onClose }) {
         method: 'POST',
         body: JSON.stringify({
           idToken: firebaseIdToken,
-          email: email.trim(),
-          firstName: firstName.trim(),
-          lastName: lastName.trim(),
+          email: sanitizeEmail(email.trim()),
+          firstName: sanitizeString(firstName.trim()),
+          lastName: sanitizeString(lastName.trim()),
         }),
       });
 
@@ -544,6 +545,7 @@ export default function LoginModal({ isOpen, onClose }) {
                   disabled={loading}
                   required
                   autoFocus
+                  autoComplete="given-name"
                 />
                 <input
                   type="text"
@@ -553,6 +555,7 @@ export default function LoginModal({ isOpen, onClose }) {
                   onChange={(e) => setLastName(e.target.value)}
                   disabled={loading}
                   required
+                  autoComplete="family-name"
                 />
                 <input
                   type="email"
@@ -562,6 +565,7 @@ export default function LoginModal({ isOpen, onClose }) {
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={loading}
                   required
+                  autoComplete="email"
                 />
 
                 {error && <p className={styles.error}>{error}</p>}

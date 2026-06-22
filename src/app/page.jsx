@@ -1,10 +1,11 @@
 'use client';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import styles from './Home.module.css';
 import ImageSlider from '../components/ImageSlider/ImageSlider';
 import ProductCard from '../components/ProductCard/ProductCard';
-import { apiFetch } from '../lib/api';
+import { useProducts } from '../lib/useProducts';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { useToast } from '../context/ToastContext';
@@ -12,6 +13,11 @@ import { useToast } from '../context/ToastContext';
 // ── Lazy-loaded below-the-fold sections ─────────────────────────
 const WatchAndShop = dynamic(
   () => import('../components/WatchAndShop/WatchAndShop'),
+  { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
+);
+
+const LifeBeforeSoldOut = dynamic(
+  () => import('../components/LifeBeforeSoldOut/LifeBeforeSoldOut'),
   { loading: () => <div className={styles.sectionSkeleton} aria-hidden="true" /> }
 );
 
@@ -65,55 +71,31 @@ const sliderImages = [
 ];
 
 export default function Home() {
-  const [newArrivals, setNewArrivals] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
   const [visibleCount, setVisibleCount] = useState(10);
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorited } = useFavorites();
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchNewArrivals = async () => {
-      try {
-        if (visibleCount === 10) {
-          setLoading(true);
-        } else {
-          setLoadingMore(true);
-        }
-        const categoryObj = categories.find(c => c.value === activeCategory);
-        const categoryParam = categoryObj && categoryObj.backendValue ? `&category=${categoryObj.backendValue}` : '';
-        const fetchLimit = visibleCount + 10;
-        const response = await apiFetch(`/products?limit=${fetchLimit}&sortBy=newest${categoryParam}`);
-        setNewArrivals(response.data?.products || response.products || []);
-      } catch (error) {
-        console.error('Failed to fetch new arrivals:', error);
-      } finally {
-        setLoading(false);
-        setLoadingMore(false);
-      }
-    };
+  const categoryObj = categories.find(c => c.value === activeCategory);
+  const { products: newArrivals, loading, error, retry } = useProducts({
+    category: categoryObj?.backendValue || '',
+    sortBy: 'newest',
+    limit: visibleCount + 10,
+  });
 
-    fetchNewArrivals();
-  }, [activeCategory, visibleCount]);
-
-  // Memoized visible products slice
   const visibleProducts = useMemo(
     () => newArrivals.slice(0, visibleCount),
     [newArrivals, visibleCount]
   );
 
-  // Stable callback refs to prevent ProductCard re-renders
   const handleCategoryClick = useCallback((categoryVal) => {
     setActiveCategory(categoryVal);
     setVisibleCount(10);
   }, []);
 
   const formatPrice = useCallback((price) => {
-    if (typeof price === 'number') {
-      return `₹${price.toFixed(0)}`;
-    }
+    if (typeof price === 'number') return `₹${price.toFixed(0)}`;
     return price;
   }, []);
 
@@ -129,16 +111,12 @@ export default function Home() {
     try {
       if (isFavorited(productId)) {
         const removed = await removeFromFavorites(productId);
-        if (removed !== false) {
-          toast.success('Removed from favorites');
-        }
+        if (removed !== false) toast.success('Removed from favorites');
       } else {
         const added = await addToFavorites(productId);
-        if (added !== false) {
-          toast.success('Added to favorites');
-        }
+        if (added !== false) toast.success('Added to favorites');
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to update favorites');
     }
   }, [isFavorited, removeFromFavorites, addToFavorites, toast]);
@@ -168,9 +146,12 @@ export default function Home() {
                 </button>
               ))}
             </div>
+            <Link href="/catalog" className={styles.viewAllLink}>
+              VIEW ALL
+            </Link>
           </div>
           <div className={styles.productGrid} role="tabpanel" aria-label="Products">
-            {loading ? (
+            {loading && visibleProducts.length === 0 ? (
               Array.from({ length: 10 }).map((_, i) => (
                 <div key={i} className={styles.productCardSkeleton} aria-hidden="true">
                   <div className={styles.skeletonImage} />
@@ -178,6 +159,11 @@ export default function Home() {
                   <div className={styles.skeletonTextSmall} />
                 </div>
               ))
+            ) : error ? (
+              <div className={styles.errorFallback} role="alert">
+                <p>Failed to load products.</p>
+                <button className={styles.retryBtn} onClick={retry}>Try Again</button>
+              </div>
             ) : visibleProducts.length === 0 ? (
               <p className={styles.noProducts} role="status">No products found</p>
             ) : (
@@ -194,21 +180,22 @@ export default function Home() {
               ))
             )}
           </div>
-          {!loading && newArrivals.length > visibleCount && (
+          {!error && (newArrivals.length > visibleCount || (loading && visibleProducts.length > 0)) && (
             <div className={styles.loadMoreContainer}>
               <button
                 onClick={() => setVisibleCount(prev => prev + 10)}
                 className={styles.loadMoreBtn}
-                disabled={loadingMore}
+                disabled={loading}
                 aria-label="Load more products"
               >
-                {loadingMore ? 'Loading...' : 'Load More'}
+                {loading ? 'Loading...' : 'Load More'}
               </button>
             </div>
           )}
         </div>
       </section>
 
+      <LifeBeforeSoldOut />
       <MatchTheMood />
       <ShopByOccasion />
       <SoulOfClothi />

@@ -191,11 +191,11 @@ export default function ProductDetailClient({ params, initialProduct }) {
       if (isFav) {
         await removeFromFavorites(params.id);
         setIsFav(false);
-        toast.success('Removed from favorites');
+        toast.success('Product has been successfully removed from your wishlist.');
       } else {
         await addToFavorites(params.id);
         setIsFav(true);
-        toast.success('Added to favorites');
+        toast.success('Product has been successfully added to your wishlist.');
       }
     } catch (err) {
       toast.error('Failed to update favorites. Please try again.');
@@ -205,7 +205,7 @@ export default function ProductDetailClient({ params, initialProduct }) {
   };
 
    const formatPrice = (price) => {
-     return `$${price.toFixed(2)}`;
+     return `₹${price.toFixed(0)}`;
    };
 
    // Color name to hex mapping (can be expanded)
@@ -437,7 +437,7 @@ export default function ProductDetailClient({ params, initialProduct }) {
             </div>
             
              <div className={styles.details}>
-               <p>✦ Free shipping on orders over $150</p>
+               <p>✦ Free shipping on orders over ₹10,000</p>
                <p>✦ Free 30-day returns</p>
                <p>✦ Sustainably made</p>
              </div>

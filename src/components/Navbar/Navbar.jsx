@@ -3,14 +3,12 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { 
-  ShoppingBag, 
   User, 
   Search, 
   Menu, 
   X,
   ChevronRight,
   ChevronDown,
-  Heart,
   Package,
   Settings,
   LogOut,
@@ -21,6 +19,8 @@ import {
   Megaphone,
   ArrowLeft
 } from 'lucide-react';
+import HeartIcon from '../HeartIcon/HeartIcon';
+import ShoppingBagIcon from '../ShoppingBagIcon/ShoppingBagIcon';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useFavorites } from '../../context/FavoritesContext';
@@ -48,6 +48,7 @@ const Navbar = ({ initialAnnouncements }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [mobileCategories, setMobileCategories] = useState([]);
+  const [avatarError, setAvatarError] = useState(false);
   const userMenuRef = useRef(null);
   const cartDropdownRef = useRef(null);
   const searchContainerRef = useRef(null);
@@ -56,6 +57,10 @@ const Navbar = ({ initialAnnouncements }) => {
   const { favorites } = useFavorites();
   const router = useRouter();
   const pathname = usePathname();
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [user]);
 
   const [isMobile, setIsMobile] = useState(false);
   const [collectionProductCount, setCollectionProductCount] = useState(0);
@@ -283,10 +288,12 @@ const Navbar = ({ initialAnnouncements }) => {
                <div className={styles.rightActions}>
                  {/* Favorites Button */}
                  <Link href="/favorites" className={styles.iconBtn}>
-                   <Heart size={20} strokeWidth={1.5} />
-                   {favoritesCount > 0 && (
-                     <span className={styles.badge}>{favoritesCount}</span>
-                   )}
+                   <span className={styles.iconWrap}>
+                     <HeartIcon size={20} strokeWidth={1.5} />
+                     {favoritesCount > 0 && (
+                       <span className={styles.badge}>{favoritesCount}</span>
+                     )}
+                   </span>
                  </Link>
                  
                  {/* Cart Button */}
@@ -297,10 +304,10 @@ const Navbar = ({ initialAnnouncements }) => {
                      aria-expanded={cartDropdownOpen}
                      aria-haspopup="true"
                    >
-                     <ShoppingBag size={20} strokeWidth={1.5} />
-                     {cartItemCount > 0 && (
-                       <span className={styles.badge}>{cartItemCount}</span>
-                     )}
+                     <span className={styles.iconWrap}>
+                       <ShoppingBagIcon size={24} strokeWidth={1.5} />
+                       <span className={styles.badge}>{cartItemCount || 0}</span>
+                     </span>
                    </button>
                    {!isMobile && (
                      <CartDropdown 
@@ -357,11 +364,32 @@ const Navbar = ({ initialAnnouncements }) => {
              
              {/* Favorites Button */}
              <Link href="/favorites" className={styles.iconBtn}>
-               <Heart size={20} strokeWidth={1.5} />
-               {favoritesCount > 0 && (
-                 <span className={styles.badge}>{favoritesCount}</span>
-               )}
+               <span className={styles.iconWrap}>
+                 <HeartIcon size={20} strokeWidth={1.5} />
+                 {favoritesCount > 0 && (
+                   <span className={styles.badge}>{favoritesCount}</span>
+                 )}
+               </span>
              </Link>
+
+             {/* Cart Button with Dropdown */}
+             <div className={styles.cartMenuWrap} ref={cartDropdownRef}>
+               <button 
+                 className={styles.iconBtn}
+                 onClick={() => setCartDropdownOpen(!cartDropdownOpen)}
+                 aria-expanded={cartDropdownOpen}
+                 aria-haspopup="true"
+               >
+                 <span className={styles.iconWrap}>
+                   <ShoppingBagIcon size={24} strokeWidth={1.5} />
+                   <span className={styles.badge}>{cartItemCount || 0}</span>
+                 </span>
+               </button>
+               <CartDropdown 
+                 isOpen={cartDropdownOpen} 
+                 onClose={() => setCartDropdownOpen(false)} 
+               />
+             </div>
 
              {/* User Menu */}
              {loading ? (
@@ -376,11 +404,16 @@ const Navbar = ({ initialAnnouncements }) => {
                    aria-expanded={userMenuOpen}
                    aria-haspopup="true"
                  >
-                   {user.avatar ? (
-                     <img src={user.avatar} alt={user.name} className={styles.avatarImg} />
-                   ) : (
-                     <span className={styles.avatarInitials}>{getUserInitials()}</span>
-                   )}
+                    {user.avatar && !avatarError ? (
+                      <img 
+                        src={user.avatar} 
+                        alt={user.name} 
+                        className={styles.avatarImg} 
+                        onError={() => setAvatarError(true)}
+                      />
+                    ) : (
+                      <span className={styles.avatarInitials}>{getUserInitials()}</span>
+                    )}
                  </button>
                  
                  {userMenuOpen && (
@@ -450,25 +483,6 @@ const Navbar = ({ initialAnnouncements }) => {
                  <User size={20} strokeWidth={1.5} />
                </button>
              )}
-
-             {/* Cart Button with Dropdown */}
-             <div className={styles.cartMenuWrap} ref={cartDropdownRef}>
-               <button 
-                 className={styles.iconBtn}
-                 onClick={() => setCartDropdownOpen(!cartDropdownOpen)}
-                 aria-expanded={cartDropdownOpen}
-                 aria-haspopup="true"
-               >
-                 <ShoppingBag size={20} strokeWidth={1.5} />
-                 {cartItemCount > 0 && (
-                   <span className={styles.badge}>{cartItemCount}</span>
-                 )}
-               </button>
-               <CartDropdown 
-                 isOpen={cartDropdownOpen} 
-                 onClose={() => setCartDropdownOpen(false)} 
-               />
-             </div>
            </div>
          </div>
          )}
@@ -557,13 +571,23 @@ const Navbar = ({ initialAnnouncements }) => {
       </button>
       <Link href="/favorites" className={styles.bottomBarItem}>
         <div className={styles.bottomBarIconWrap}>
-          <Heart size={22} strokeWidth={1.5} />
+          <HeartIcon size={22} strokeWidth={1.5} />
           {favoritesCount > 0 && (
             <span className={styles.bottomBarBadge}>{favoritesCount}</span>
           )}
         </div>
         <span>Wishlist</span>
       </Link>
+      <button 
+        className={styles.bottomBarItem}
+        onClick={() => setCartDropdownOpen(!cartDropdownOpen)}
+      >
+        <div className={styles.bottomBarIconWrap}>
+          <ShoppingBagIcon size={26} strokeWidth={1.5} />
+          <span className={styles.bottomBarBadge}>{cartItemCount || 0}</span>
+        </div>
+        <span>Bag</span>
+      </button>
       {user ? (
         <Link href="/account" className={styles.bottomBarItem}>
           <User size={22} strokeWidth={1.5} />
@@ -575,18 +599,6 @@ const Navbar = ({ initialAnnouncements }) => {
           <span>Log in</span>
         </button>
       )}
-      <button 
-        className={styles.bottomBarItem}
-        onClick={() => setCartDropdownOpen(!cartDropdownOpen)}
-      >
-        <div className={styles.bottomBarIconWrap}>
-          <ShoppingBag size={22} strokeWidth={1.5} />
-          {cartItemCount > 0 && (
-            <span className={styles.bottomBarBadge}>{cartItemCount}</span>
-          )}
-        </div>
-        <span>Bag</span>
-      </button>
     </div>
     {isMobile && (
       <CartDropdown 

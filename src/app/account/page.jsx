@@ -19,6 +19,11 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+
+  useEffect(() => {
+    setAvatarError(false);
+  }, [user]);
   
   // Profile state
   const [profile, setProfile] = useState({
@@ -263,8 +268,12 @@ export default function AccountPage() {
           <aside className={styles.sidebar}>
             <div className={styles.userCard}>
               <div className={styles.avatar}>
-                {user.avatar ? (
-                  <img src={user.avatar} alt={user.firstName} />
+                {user.avatar && !avatarError ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={user.firstName} 
+                    onError={() => setAvatarError(true)}
+                  />
                 ) : (
                   <span>{((user.firstName || user.email || 'U')[0] + (user.lastName || '')[0]).toUpperCase()}</span>
                 )}
