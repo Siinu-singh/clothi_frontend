@@ -120,9 +120,20 @@ export default function LoginModal({ isOpen, onClose }) {
   // ─── Setup reCAPTCHA ───────────────────────────────────────────
   const setupRecaptcha = useCallback(() => {
     if (recaptchaVerifierRef.current) {
+      try { recaptchaVerifierRef.current.clear(); } catch {}
+      recaptchaVerifierRef.current = null;
+    }
+    const container = recaptchaContainerRef.current || document.getElementById('recaptcha-container');
+    if (container) {
+      container.innerHTML = '';
+    }
+
+    if (!container) {
+      console.error('reCAPTCHA container element not found');
       return;
     }
-    recaptchaVerifierRef.current = new RecaptchaVerifier(getFirebaseAuth(), 'recaptcha-container', {
+
+    recaptchaVerifierRef.current = new RecaptchaVerifier(getFirebaseAuth(), container, {
       size: 'invisible',
       callback: () => {},
       'expired-callback': () => {
@@ -143,6 +154,9 @@ export default function LoginModal({ isOpen, onClose }) {
     setLoading(true);
     try {
       setupRecaptcha();
+      if (!recaptchaVerifierRef.current) {
+        throw new Error('Failed to initialize reCAPTCHA.');
+      }
       const fullPhone = `${countryCode}${cleanPhone}`;
       const result = await signInWithPhoneNumber(getFirebaseAuth(), fullPhone, recaptchaVerifierRef.current);
       setConfirmationResult(result);
@@ -166,6 +180,8 @@ export default function LoginModal({ isOpen, onClose }) {
         setError('Invalid phone number format.');
       } else if (err.code === 'auth/billing-not-enabled') {
         setError('SMS sending requires a paid Firebase plan. To test for free, add your phone number as a "Phone number for testing" in the Firebase Console under Authentication > Sign-in method.');
+      } else if (err.code === 'auth/internal-error') {
+        setError('Firebase Internal Error. For real SMS, your Firebase project must be upgraded to the Blaze (billing) plan. For free local testing, add your phone number under "Phone numbers for testing" in Firebase Console > Authentication > Sign-in method.');
       } else {
         setError(err.message || 'Failed to send OTP. Please try again.');
       }

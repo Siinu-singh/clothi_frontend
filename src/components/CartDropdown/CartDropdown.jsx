@@ -29,7 +29,7 @@ export default function CartDropdown({ isOpen, onClose }) {
   };
 
   const formatPrice = (price) => {
-    return `$${(price || 0).toFixed(2)}`;
+    return `₹${(price || 0).toFixed(2)}`;
   };
 
   if (!isOpen) return null;
@@ -150,9 +150,16 @@ export default function CartDropdown({ isOpen, onClose }) {
             <span>Subtotal</span>
             <span className={styles.subtotalPrice}>{formatPrice(cart.totalPrice)}</span>
           </div>
-          <Link href="/cart" className={styles.viewCartBtn} onClick={onClose}>
+          <button 
+            className={styles.viewCartBtn} 
+            onClick={(e) => {
+              e.preventDefault();
+              onClose();
+              window.location.href = '/cart';
+            }}
+          >
             View Cart
-          </Link>
+          </button>
           <Link href="/checkout" className={styles.checkoutBtn} onClick={onClose}>
             Checkout
           </Link>

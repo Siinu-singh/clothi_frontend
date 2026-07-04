@@ -166,7 +166,23 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
         });
 
         return true;
-      } catch (err) {
+      } catch (err: unknown) {
+        // 409 = already favorited — treat as success and sync local state
+        if (err && typeof err === 'object' && 'status' in err && (err as { status: number }).status === 409) {
+          const idString = String(productId);
+          setFavorites((prev) => {
+            const exists = prev.some(
+              (item) =>
+                String(item._id) === idString ||
+                String(item.productId) === idString,
+            );
+            if (!exists) {
+              return [...prev, { productId: idString, _id: idString }];
+            }
+            return prev;
+          });
+          return true;
+        }
         console.error('Add to favorites failed', err);
         throw err;
       }

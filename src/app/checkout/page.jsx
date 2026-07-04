@@ -69,7 +69,9 @@ export default function CheckoutPage() {
   const loadAddresses = async () => {
     try {
       const response = await apiFetch('/addresses');
-      const addrs = response.data || [];
+      // API may return { data: [...] }, { data: { addresses: [...] } }, or just [...]
+      const raw = response.data ?? response;
+      const addrs = Array.isArray(raw) ? raw : (Array.isArray(raw.addresses) ? raw.addresses : []);
       setAddresses(addrs);
       // Auto-select default address
       const defaultAddr = addrs.find(a => a.isDefault) || addrs[0];

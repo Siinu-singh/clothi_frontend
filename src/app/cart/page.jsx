@@ -52,7 +52,7 @@ export default function CartPage() {
   };
 
   const formatPrice = (price) => {
-    return `$${price.toFixed(2)}`;
+    return `₹${price.toFixed(2)}`;
   };
 
   // Not logged in
