@@ -11,20 +11,20 @@ export default function ImageSlider({ images = [] }) {
 
   const slides = images.length > 0 ? images : [
     {
-      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1775568636/4_koks8s.jpg',
+      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018453/e5rlqmitkmj2usentgk2_zswbq2.avif',
       link: '/catalog',
     },
     {
-      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783195306/ChatGPT_Image_Jul_5_2026_01_29_36_AM_lluvyt.png',
+      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018455/vtaoia8aox2todcupl8l_ke9vqq.avif',
       link: '/catalog?category=POLO',
       objectPosition: 'top',
     },
     {
-      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1775568636/1_gnlpyw.jpg',
+      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018455/wu70emgcrwec3obqxdla_dgwbdm.avif',
       link: '/catalog?category=DRY-FIT',
     },
     {
-      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
+      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018454/rbhqowen9wwmhsede09s_rvd0y1.avif',
       link: '/catalog?category=OVERSIZE',
     },
 

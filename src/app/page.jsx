@@ -53,20 +53,20 @@ const categories = [
 // ── Slider images ───────────────────────────────────────────────
 const sliderImages = [
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200791/ChatGPT_Image_Jul_5_2026_02_56_55_AM_qqstgq.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018453/e5rlqmitkmj2usentgk2_zswbq2.avif',
     link: '/catalog',
   },
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200792/ChatGPT_Image_Jul_5_2026_03_00_47_AM_cwtfnv.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018455/vtaoia8aox2todcupl8l_ke9vqq.avif',
     link: '/catalog?category=POLO',
     objectPosition: 'top',
   },
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200791/ChatGPT_Image_Jul_5_2026_02_51_13_AM_y40chv.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018455/wu70emgcrwec3obqxdla_dgwbdm.avif',
     link: '/catalog?category=DRY-FIT',
   },
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200791/ChatGPT_Image_Jul_5_2026_02_30_15_AM_dwmwis.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784018454/rbhqowen9wwmhsede09s_rvd0y1.avif',
     link: '/catalog?category=OVERSIZE',
     objectPosition: 'top',
 
