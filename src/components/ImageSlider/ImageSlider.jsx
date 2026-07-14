@@ -1,12 +1,13 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import styles from './ImageSlider.module.css';
 
 export default function ImageSlider({ images = [] }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const autoPlayRef = useRef(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const slides = images.length > 0 ? images : [
     {
@@ -14,8 +15,9 @@ export default function ImageSlider({ images = [] }) {
       link: '/catalog',
     },
     {
-      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
+      url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783195306/ChatGPT_Image_Jul_5_2026_01_29_36_AM_lluvyt.png',
       link: '/catalog?category=POLO',
+      objectPosition: 'top',
     },
     {
       url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1775568636/1_gnlpyw.jpg',
@@ -25,81 +27,126 @@ export default function ImageSlider({ images = [] }) {
       url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
       link: '/catalog?category=OVERSIZE',
     },
+
   ];
 
-  // Auto-play effect
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(null);
+  const [direction, setDirection] = useState('next'); // 'next' or 'prev'
+
+  // Transition to a new slide
+  const goTo = useCallback((newIndex, dir = 'next') => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setDirection(dir);
+    setPrevIndex(currentIndex);
+    setCurrentIndex(newIndex);
+  }, [isAnimating, currentIndex]);
+
+  const handleNext = useCallback(() => {
+    const next = (currentIndex + 1) % slides.length;
+    goTo(next, 'next');
+  }, [currentIndex, slides.length, goTo]);
+
+  const handlePrev = useCallback(() => {
+    const prev = (currentIndex - 1 + slides.length) % slides.length;
+    goTo(prev, 'prev');
+  }, [currentIndex, slides.length, goTo]);
+
+  const goToSlide = useCallback((index) => {
+    if (index === currentIndex) return;
+    goTo(index, index > currentIndex ? 'next' : 'prev');
+  }, [currentIndex, goTo]);
+
+  // Autoplay
   useEffect(() => {
-    if (slides.length === 0) return;
+    if (slides.length <= 1) return;
+    autoPlayRef.current = setTimeout(() => {
+      handleNext();
+    }, 2500);
+    return () => clearTimeout(autoPlayRef.current);
+  }, [currentIndex, isAnimating, slides.length, handleNext]);
 
-    autoPlayRef.current = setInterval(() => {
-      setCurrentIndex(prev => (prev + 1) % slides.length);
-    }, 3000); // Change image every 3 seconds
-
-    return () => clearInterval(autoPlayRef.current);
-  }, [slides.length]);
-
-  const goToSlide = (index) => {
-    setCurrentIndex(index % slides.length);
-  };
+  // Animation end handler
+  const handleAnimationEnd = useCallback(() => {
+    setIsAnimating(false);
+    setPrevIndex(null);
+  }, []);
 
   return (
     <div className={styles.sliderContainer}>
-      {/* Slides */}
-      <div className={styles.slidesWrapper}>
-        {slides.map((slide, index) => (
+      {/* All slides stacked */}
+      {slides.map((slide, index) => {
+        // Determine the role of this slide
+        const isCurrent = index === currentIndex;
+        const isLeaving = index === prevIndex && isAnimating;
+
+        // The current (incoming) slide sits at z-index 1 (behind)
+        // The leaving (outgoing) slide sits at z-index 2 (on top, sliding away)
+        let slideClass = styles.slide;
+        if (isCurrent) slideClass += ` ${styles.current}`;
+        if (isLeaving && direction === 'next') slideClass += ` ${styles.leavingNext}`;
+        if (isLeaving && direction === 'prev') slideClass += ` ${styles.leavingPrev}`;
+
+        // Only render current, leaving, or the one right before animation clears
+        const isVisible = isCurrent || isLeaving;
+        if (!isVisible) return null;
+
+        return (
           <div
             key={index}
-            className={`${styles.slide} ${index === currentIndex ? styles.active : ''}`}
+            className={slideClass}
+            onAnimationEnd={isLeaving ? handleAnimationEnd : undefined}
           >
             <Link href={slide.link || '#'} className={styles.slideLink}>
               <Image
                 src={slide.url}
-                alt={`Slide ${index + 1}`}
+                alt="Store Banner Slide"
                 fill
                 sizes="100vw"
-                style={{ objectFit: 'cover', objectPosition: 'center' }}
-                priority={index === 0}
-                quality={80}
+                style={{
+                  objectFit: 'cover',
+                  objectPosition: slide.objectPosition || 'center',
+                }}
+                priority={index <= 1}
+                quality={85}
               />
-              {/* Text Overlay - First slide */}
-              {index === 0 && (
-                <div className={styles.textOverlay}>
-                  <h1 className={styles.mainText}>Prime Basics</h1>
-                  <p className={styles.subtitleText}>Prime Model Minimal</p>
-                  <span className={styles.shopNowBtn}>Shop Now</span>
-                </div>
-              )}
 
-              {/* Text Overlay - Second slide */}
-              {index === 1 && (
-                <div className={styles.crownOverlay}>
-                  <h2 className={styles.crownTitle}>The Crown Series</h2>
-                  <p className={styles.crownSubtitle}>Clean. Refined. Timeless</p>
-                  <span className={styles.shopNowBtn}>Shop Now</span>
-                </div>
-              )}
-
-              {/* Text Overlay - Third slide */}
-              {index === 2 && (
-                <div className={styles.motionOverlay}>
-                  <h2 className={styles.motionTitle}>Motion<span className={styles.motionX}> X</span></h2>
-                  <p className={styles.motionSubtitle}>Swift. Strong. Agile</p>
-                  <span className={styles.shopNowBtn}>Shop Now</span>
-                </div>
-              )}
-
-              {/* Text Overlay - Fourth slide */}
-              {index === 3 && (
-                <div className={styles.zenOverlay}>
-                  <h2 className={styles.zenTitle}>Zen-G by clothi</h2>
-                  <p className={styles.zenSubtitle}>Relaxed. Effortless. Everyday</p>
-                  <span className={styles.shopNowBtn}>Shop Now</span>
-                </div>
+              {/* Text overlays — only on the current (incoming) slide */}
+              {isCurrent && (
+                <>
+                  {index === 0 && (
+                    <div className={styles.textOverlay}>
+                      {/* <h1 className={styles.mainText}>Prime Basics</h1>
+                      <p className={styles.subtitleText}>Prime Model Minimal</p> */}
+                      <span className={styles.shopNowBtn}>Shop Now</span>
+                    </div>
+                  )}
+                  {index === 1 && (
+                    <div className={styles.crownOverlay}>
+                      <span className={styles.shopNowBtn}>Shop Now</span>
+                    </div>
+                  )}
+                  {index === 2 && (
+                    <div className={styles.motionOverlay}>
+                      {/* <h2 className={styles.motionTitle}>Motion<span className={styles.motionX}> X</span></h2>
+                      <p className={styles.motionSubtitle}>Swift. Strong. Agile</p> */}
+                      <span className={styles.shopNowBtn}>Shop Now</span>
+                    </div>
+                  )}
+                  {index === 3 && (
+                    <div className={styles.zenOverlay}>
+                      {/* <h2 className={styles.zenTitle}>Zen-G by clothi</h2>
+                      <p className={styles.zenSubtitle}>Relaxed. Effortless. Everyday</p> */}
+                      <span className={styles.shopNowBtn}>Shop Now</span>
+                    </div>
+                  )}
+                </>
               )}
             </Link>
           </div>
-        ))}
-      </div>
+        );
+      })}
 
       {/* Navigation Dots */}
       <div className={styles.dotsContainer}>
@@ -112,6 +159,7 @@ export default function ImageSlider({ images = [] }) {
           />
         ))}
       </div>
+
     </div>
   );
 }

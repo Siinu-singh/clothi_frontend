@@ -7,30 +7,30 @@ export default function MatchTheMood() {
   const moods = [
     {
       id: '3d606b95-c37b-42e4-9f43-f3ace9a1b4d0',
-      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776526229/Oversize_Match_the_Mood_smn3lh.jpg',
+      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784017271/jdav9i0ynmgph2qwze7c_u8aifo.avif',
       link: '/catalog',
-      title: 'Off-Duty',
+      // title: 'Off-Duty',
       // subtitle: 'PICKS',
     },
     {
       id: 'ec434243-e6ca-4ccd-85b1-e86576394896',
-      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776526229/Polo_Match_the_Mood_xdczc5.jpg',
+      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784017272/fkffzq3woo40cua4djmd_bsmm1y.avif',
       link: '/catalog',
-      title: 'PRIME FORM',
+      // title: 'PRIME FORM',
       // subtitle: 'PICS',
     },
     {
       id: '0dfa8703-2d45-40c5-b846-0d296a6d165f',
-      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776526229/Casual_Match_the_Mood_h1birh.jpg',
+      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784017271/xersbbyc3swzlm8bj6vy_ny6o4n.avif',
       link: '/catalog',
-      title: 'OPEN AIR',
+      // title: 'OPEN AIR',
       // subtitle: 'DRIP',
     },
     {
       id: '85c52675-d3ab-4a07-822e-127ab173e314',
-      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776526229/Dryfit_Match_the_Mood_j6g75p.jpg',
+      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1784017271/bzgiumwryncjvbj5j43n_clxrxn.avif',
       link: '/catalog',
-      title: 'ACTIVE CORE',
+      // title: 'ACTIVE CORE',
       // subtitle: 'REFINED',
     },
     // {
@@ -52,7 +52,7 @@ export default function MatchTheMood() {
             <div className={styles.cardInner}>
               <Image
                 src={mood.image}
-                alt={mood.title}
+                alt={mood.title | "Mood category image"}
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 style={{ objectFit: 'cover' }}

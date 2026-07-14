@@ -26,7 +26,7 @@ export const metadata = {
     default: 'CLOTHI — Premium Coastal Lifestyle Apparel',
     template: '%s | CLOTHI',
   },
-  description: 'Discover sustainable, premium coastal lifestyle apparel. Sun-drenched softness crafted from organic pima cotton. Ethical fashion for men and women. Free shipping on orders over $100.',
+  description: 'Discover sustainable, premium coastal lifestyle apparel. Sun-drenched softness crafted from organic pima cotton. Ethical fashion for men and women. Free shipping on orders over ₹100.',
   keywords: [
     'sustainable fashion',
     'coastal lifestyle',

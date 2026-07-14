@@ -13,7 +13,7 @@ import styles from './Account.module.css';
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
   
   const [activeTab, setActiveTab] = useState('profile');
@@ -48,7 +48,7 @@ export default function AccountPage() {
     city: '',
     state: '',
     zipCode: '',
-    country: 'United States',
+    country: 'India',
     isDefault: false,
   });
 
@@ -105,6 +105,7 @@ export default function AccountPage() {
         body: JSON.stringify(profile),
       });
       toast.success('Profile updated successfully');
+      await refreshUser();
     } catch (err) {
       toast.error('Failed to update profile');
     } finally {
@@ -355,7 +356,7 @@ export default function AccountPage() {
                       type="tel"
                       value={profile.phone}
                       onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 98765 43210"
                     />
                   </div>
 
@@ -439,7 +440,7 @@ export default function AccountPage() {
                           type="tel"
                           value={addressForm.phone}
                           onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="+91 98765 43210"
                           required
                         />
                       </div>

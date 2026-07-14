@@ -94,7 +94,7 @@ export default function FavoritesPage() {
   };
 
   const formatPrice = (price) => {
-    return `$${price.toFixed(0)}`;
+    return `₹${price.toFixed(0)}`;
   };
 
   const handleShareWishlist = async () => {

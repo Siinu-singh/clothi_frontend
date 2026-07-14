@@ -211,12 +211,15 @@ export default function CartPage() {
               <span>{formatPrice(cart.totalPrice + (cart.totalPrice >= 150 ? 0 : 15))}</span>
             </div>
 
-            <button className={styles.checkoutBtn}>
+            <button 
+              className={styles.checkoutBtn}
+              onClick={() => router.push('/checkout')}
+            >
               Proceed to Checkout
             </button>
 
             <div className={styles.trustBadges}>
-              <p>Free shipping on orders over $150</p>
+              <p>Free shipping on orders over ₹150</p>
               <p>Free 30-day returns</p>
               <p>Secure checkout</p>
             </div>

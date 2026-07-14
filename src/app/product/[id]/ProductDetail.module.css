@@ -99,7 +99,7 @@
 
 .infoCol { padding: 1rem 0; }
 .kicker { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-primary); display: block; margin-bottom: 1rem; }
-.title { font-size: 3rem; font-style: italic; font-weight: 400; margin-bottom: 1rem; line-height: 1.15; }
+.title { font-size: 3rem; font-weight: 400; margin-bottom: 1rem; line-height: 1.15; }
 .price { font-size: 1.375rem; color: var(--color-on-surface-variant); margin-bottom: 2rem; }
 .price { font-size: 1.375rem; color: var(--color-on-surface-variant); margin-bottom: 2rem; }
 .sectionLabel { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; display: block; margin-bottom: 0.75rem; }

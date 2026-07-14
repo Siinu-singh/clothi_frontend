@@ -9,7 +9,7 @@ export default function ShopByOccasion() {
     {
       id: 1,
       title: 'SUN DRIP',
-      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776531282/Sun_Drip_rvms4o.jpg',
+      image: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783179480/Sundrip_rwvf9z.png',
     },
     {
       id: 2,

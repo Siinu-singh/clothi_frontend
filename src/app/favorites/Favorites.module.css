@@ -27,7 +27,6 @@
 
 .title {
   font-size: 3rem;
-  font-style: italic;
   font-weight: 400;
   margin-bottom: 0.5rem;
   line-height: 1.15;
@@ -99,7 +98,6 @@
   position: relative;
   aspect-ratio: 3/4;
   background: var(--color-surface-dim);
-  border-radius: 8px;
   overflow: hidden;
   margin-bottom: 1rem;
 }

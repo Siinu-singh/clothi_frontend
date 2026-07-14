@@ -3,17 +3,33 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Instagram, Facebook, Linkedin, Mail, Phone } from 'lucide-react';
 import styles from './Footer.module.css';
+import { apiFetch } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    if (email.trim()) {
+    if (!email.trim()) return;
+
+    setLoading(true);
+    try {
+      await apiFetch('/newsletter/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
       setSubscribed(true);
+      toast.success('Successfully subscribed to newsletter!');
       setEmail('');
       setTimeout(() => setSubscribed(false), 3000);
+    } catch (err) {
+      toast.error(err.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,9 +54,10 @@ const Footer = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
-              <button type="submit" className={styles.newsletterBtn}>
-                {subscribed ? 'SUBSCRIBED ✓' : 'SIGN UP NOW'}
+              <button type="submit" className={styles.newsletterBtn} disabled={loading || subscribed}>
+                {loading ? 'SIGNING UP...' : subscribed ? 'SUBSCRIBED ✓' : 'SIGN UP NOW'}
               </button>
             </form>
           </div>

@@ -1,4 +1,4 @@
-/* ========== IMAGE SLIDER ========== */
+/* ========== IMAGE SLIDER — BONKERS REVEAL/UNCOVER EFFECT ========== */
 .sliderContainer {
   position: relative;
   width: 100%;
@@ -8,38 +8,66 @@
   background: #000;
 }
 
-.slidesWrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
+/* --- SLIDE LAYERS (stacked on top of each other) --- */
 .slide {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.8s ease-in-out, visibility 0.8s;
-  z-index: 1;
   overflow: hidden;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
-.slide.active {
-  opacity: 1;
-  visibility: visible;
+/* The CURRENT (incoming) slide sits behind at z-index 1.
+   It's already in place — the outgoing slide reveals it by sliding away. */
+.slide.current {
+  z-index: 1;
+  animation: revealZoom 1.2s cubic-bezier(0.76, 0, 0.24, 1) both;
+}
+
+/* The LEAVING slide sits on top at z-index 2, and slides out to the left */
+.slide.leavingNext {
   z-index: 2;
+  animation: slideOutLeft 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
 }
 
-/* Zoom out transition on active slide image */
-.slide img {
-  transform: scale(1.12); /* Start slightly zoomed in */
-  transition: transform 3.5s cubic-bezier(0.16, 1, 0.3, 1); /* Smooth cinematic transition */
+/* Leaving to prev — slide slides out to the right */
+.slide.leavingPrev {
+  z-index: 2;
+  animation: slideOutRight 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
 }
 
-.slide.active img {
-  transform: scale(1); /* Zoom out to normal scale when active */
+/* --- KEYFRAMES --- */
+
+/* Outgoing slide exits to the left */
+@keyframes slideOutLeft {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-100%, 0, 0);
+  }
+}
+
+/* Outgoing slide exits to the right (when going prev) */
+@keyframes slideOutRight {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* Incoming slide: subtle zoom-out from 1.08 → 1 as it's revealed */
+@keyframes revealZoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* ========== NAVIGATION DOTS ========== */
@@ -83,7 +111,7 @@
   transform: scale(1);
 }
 
-/* ========== LOADING STATE ========== */
+/* ========== GRADIENT OVERLAY ON SLIDES ========== */
 .slideLink::before {
   content: "";
   position: absolute;
@@ -122,7 +150,7 @@
   margin-bottom: 0.75rem;
   letter-spacing: 3px;
   text-shadow: 0 6px 24px rgba(0, 0, 0, 0.7);
-  animation: fadeInDown 0.8s ease-out;
+  animation: fadeInDown 0.9s cubic-bezier(0.25, 1, 0.5, 1) both;
   font-family: "Georgia", "Garamond", "Times New Roman", serif;
 }
 
@@ -133,14 +161,14 @@
   margin: 0;
   letter-spacing: 2px;
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
-  animation: fadeInUp 0.8s ease-out 0.2s both;
+  animation: fadeInUp 0.9s cubic-bezier(0.25, 1, 0.5, 1) 0.25s both;
   font-family: "Georgia", "Garamond", "Times New Roman", serif;
 }
 
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-16px);
   }
   to {
     opacity: 1;
@@ -151,7 +179,7 @@
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -242,6 +270,67 @@
   text-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
   animation: fadeInUp 0.8s ease-out 0.2s both;
   font-family: "Georgia", "Garamond", "Times New Roman", serif;
+}
+
+/* ========== NAVIGATION ARROWS ========== */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease, background 0.3s ease;
+}
+
+.sliderContainer:hover .navBtn {
+  opacity: 1;
+}
+
+.navBtn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.prevBtn {
+  left: 1.5rem;
+}
+
+.nextBtn {
+  right: 1.5rem;
+}
+
+/* ========== PROGRESS BAR ========== */
+.progressBarContainer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  z-index: 10;
+}
+
+.progressBar {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.7);
+  width: 0%;
+  animation: progressFill linear forwards;
+}
+
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: 100%; }
 }
 
 /* ========== RESPONSIVE ========== */
@@ -336,6 +425,19 @@
     margin-top: 0.5rem;
     text-align: center;
   }
+
+  .navBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .prevBtn {
+    left: 1rem;
+  }
+
+  .nextBtn {
+    right: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -420,6 +522,19 @@
     letter-spacing: 0.75px;
     margin-top: 0.375rem;
   }
+
+  .navBtn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .prevBtn {
+    left: 0.75rem;
+  }
+
+  .nextBtn {
+    right: 0.75rem;
+  }
 }
 
 /* ========== CLICKABLE SLIDE LINK & SHOP NOW BUTTON ========== */
@@ -447,7 +562,7 @@
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  animation: fadeInUp 0.8s ease-out 0.4s both;
+  animation: fadeInUp 0.9s cubic-bezier(0.25, 1, 0.5, 1) 0.45s both;
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -51,7 +51,7 @@ const features = [
   {
     icon: Truck,
     title: 'Free Shipping',
-    description: 'Complimentary shipping on all orders over $100, delivered in eco-friendly packaging.',
+    description: 'Complimentary shipping on all orders over ₹100, delivered in eco-friendly packaging.',
   },
   {
     icon: Users,

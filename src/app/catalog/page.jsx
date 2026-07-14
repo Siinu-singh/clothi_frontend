@@ -3,7 +3,7 @@
 
 export const metadata = {
   title: 'Shop Our Collection - Sustainable Fashion',
-  description: 'Browse CLOTHI\'s curated collection of sustainable coastal apparel. Premium organic cotton clothing for men and women. Filter by category, size, and style. Free shipping on orders over $100.',
+  description: 'Browse CLOTHI\'s curated collection of sustainable coastal apparel. Premium organic cotton clothing for men and women. Filter by category, size, and style. Free shipping on orders over ₹100.',
   keywords: [
     'sustainable clothing',
     'organic cotton apparel',

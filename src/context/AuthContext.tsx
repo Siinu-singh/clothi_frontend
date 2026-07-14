@@ -32,6 +32,7 @@ interface AuthState {
 interface AuthActions {
   login: (email: string, password: string) => Promise<{ token: string; user: User }>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 type AuthContextValue = AuthState & AuthActions;
@@ -123,8 +124,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const response = await apiFetch<{ success: boolean; data: User }>('/auth/profile');
+        const userData = response.data || (response as unknown as User);
+        setUser(userData);
+      }
+    } catch (err) {
+      console.error('Failed to refresh user profile:', err);
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
@@ -151,6 +165,6 @@ export const useAuthState = (): AuthState => {
 
 /** Actions-only hook. Use for event handlers. */
 export const useAuthActions = (): AuthActions => {
-  const { login, logout } = useAuth();
-  return { login, logout };
+  const { login, logout, refreshUser } = useAuth();
+  return { login, logout, refreshUser };
 };

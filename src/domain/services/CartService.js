@@ -120,7 +120,7 @@ export class CartService extends BaseService {
       if (updatedCart.coupon) {
         this.log('coupon applied', { couponCode, discount: updatedCart.discount });
         await this.notificationService?.success(
-          `Coupon applied! You saved $${updatedCart.discount.toFixed(2)}`
+          `Coupon applied! You saved ₹${updatedCart.discount.toFixed(2)}`
         );
       } else {
         throw new Error('Coupon code is invalid or expired');

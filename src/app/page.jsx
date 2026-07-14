@@ -53,20 +53,23 @@ const categories = [
 // ── Slider images ───────────────────────────────────────────────
 const sliderImages = [
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776509044/WEBSITE_BANNERS_gvcuq6.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200791/ChatGPT_Image_Jul_5_2026_02_56_55_AM_qqstgq.png',
     link: '/catalog',
   },
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776182265/5_qexced.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200792/ChatGPT_Image_Jul_5_2026_03_00_47_AM_cwtfnv.png',
     link: '/catalog?category=POLO',
+    objectPosition: 'top',
   },
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508755/DRYFIT_image_iy9bke.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200791/ChatGPT_Image_Jul_5_2026_02_51_13_AM_y40chv.png',
     link: '/catalog?category=DRY-FIT',
   },
   {
-    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1776508907/Zen-G_by_clothi_1_tkltka.png',
+    url: 'https://res.cloudinary.com/dsrht8rss/image/upload/v1783200791/ChatGPT_Image_Jul_5_2026_02_30_15_AM_dwmwis.png',
     link: '/catalog?category=OVERSIZE',
+    objectPosition: 'top',
+
   },
 ];
 

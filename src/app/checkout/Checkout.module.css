@@ -561,3 +561,72 @@
 .trustBadge svg {
   color: var(--color-tertiary);
 }
+
+/* Razorpay Custom Styles */
+.paymentMethods {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.paymentMethodOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--color-surface-dim);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.paymentMethodOption:hover {
+  border-color: var(--color-outline);
+}
+
+.paymentMethodOption.selected {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.paymentMethodOption input {
+  margin-top: 0.25rem;
+  accent-color: var(--color-primary);
+}
+
+.paymentMethodContent {
+  flex: 1;
+}
+
+.paymentMethodLabel {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.paymentMethodDesc {
+  font-size: 0.8125rem;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.razorpayInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(17, 17, 17, 0.03);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 8px;
+  color: var(--color-on-surface-variant);
+}
+
+.razorpayInfoIcon {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+

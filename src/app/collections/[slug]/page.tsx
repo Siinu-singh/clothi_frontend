@@ -74,7 +74,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const title = `${collection.name} Collection — Curated Fashion`;
     const description = collection.description?.slice(0, 155) || 
-      `Browse the ${collection.name} collection at CLOTHI. Premium sustainable coastal fashion. Free shipping on orders over $100.`;
+      `Browse the ${collection.name} collection at CLOTHI. Premium sustainable coastal fashion. Free shipping on orders over ₹100.`;
     const mainImage = (collection as any).images?.find((img: any) => img.isMain)?.url || (collection as any).images?.[0]?.url || '/og-image.png';
 
     return {

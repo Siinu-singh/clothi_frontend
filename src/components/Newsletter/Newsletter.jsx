@@ -2,15 +2,32 @@ import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import styles from './Newsletter.module.css';
 import { sanitizeEmail } from '../../lib/sanitize';
+import { apiFetch } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 const Newsletter = () => {
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
     const sanitized = sanitizeEmail(email);
-    // Submit sanitized email
-    setEmail('');
+    if (!sanitized) return;
+
+    setIsLoading(true);
+    try {
+      await apiFetch('/newsletter/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ email: sanitized }),
+      });
+      toast.success('Successfully subscribed to newsletter!');
+      setEmail('');
+    } catch (err) {
+      toast.error(err.message || 'Failed to subscribe. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <section className={styles.section}>
@@ -35,8 +52,11 @@ const Newsletter = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
+                disabled={isLoading}
               />
-              <button type="submit" className={styles.emailBtn}><ChevronRight size={20} /></button>
+              <button type="submit" className={styles.emailBtn} disabled={isLoading}>
+                {isLoading ? '...' : <ChevronRight size={20} />}
+              </button>
             </form>
           </div>
         </div>

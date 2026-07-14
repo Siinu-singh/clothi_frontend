@@ -11,12 +11,32 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import styles from './Checkout.module.css';
+import Script from 'next/script';
 
 const SHIPPING_OPTIONS = [
   { id: 'standard', name: 'Standard Shipping', price: 0, days: '5-7 business days' },
   { id: 'express', name: 'Express Shipping', price: 15, days: '2-3 business days' },
   { id: 'overnight', name: 'Overnight Shipping', price: 30, days: '1 business day' },
 ];
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false);
+      return;
+    }
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -40,7 +60,7 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     zipCode: '',
-    country: 'United States',
+    country: 'India',
     phone: '',
     saveAddress: true,
   });
@@ -53,6 +73,8 @@ export default function CheckoutPage() {
     cvv: '',
     saveCard: false,
   });
+
+  const [paymentMethod, setPaymentMethod] = useState('razorpay');
 
   useEffect(() => {
     if (!user) {
@@ -94,7 +116,7 @@ export default function CheckoutPage() {
   
   const getTotal = () => getSubtotal() + getShippingCost() + getTax();
 
-  const formatPrice = (price) => `$${(price || 0).toFixed(2)}`;
+  const formatPrice = (price) => `₹${(price || 0).toFixed(2)}`;
 
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
@@ -159,34 +181,127 @@ export default function CheckoutPage() {
             state: addressForm.state,
             zipCode: addressForm.zipCode,
             country: addressForm.country,
+            firstName: addressForm.firstName,
+            lastName: addressForm.lastName,
+            email: user?.email || '',
+            phone: addressForm.phone,
           };
 
-      const orderData = {
-        items: cart.items.map(item => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          size: item.size,
-          color: item.color,
-          price: item.product?.price || 0,
-        })),
-        shippingAddress,
-        shippingMethod: selectedShipping,
-        shippingCost: getShippingCost(),
-        subtotal: getSubtotal(),
-        tax: getTax(),
-        total: getTotal(),
-        paymentMethod: 'card',
-        cardLast4: paymentForm.cardNumber.slice(-4),
-      };
+      // Handle missing names/email/phone on selectedAddress
+      if (shippingAddress) {
+        if (!shippingAddress.firstName) shippingAddress.firstName = addressForm.firstName || user?.firstName || '';
+        if (!shippingAddress.lastName) shippingAddress.lastName = addressForm.lastName || user?.lastName || '';
+        if (!shippingAddress.email) shippingAddress.email = user?.email || '';
+        if (!shippingAddress.phone) shippingAddress.phone = addressForm.phone || '';
+      }
 
-      const response = await apiFetch('/orders', {
-        method: 'POST',
-        body: JSON.stringify(orderData),
-      });
+      const orderItems = cart.items.map(item => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        size: item.size,
+        color: item.color,
+        price: item.product?.price || 0,
+        title: item.product?.title || '',
+      }));
 
-      await clearCart();
-      toast.success('Order placed successfully!');
-      router.push(`/orders?success=true&orderId=${response.data?._id || ''}`);
+      if (paymentMethod === 'razorpay') {
+        if (!window.Razorpay) {
+          const isLoaded = await loadRazorpayScript();
+          if (!isLoaded && !window.Razorpay) {
+            throw new Error('Failed to load Razorpay SDK. Please check your internet connection or try refreshing the page.');
+          }
+        }
+
+        const response = await apiFetch('/orders/razorpay/create', {
+          method: 'POST',
+          body: JSON.stringify({
+            items: orderItems,
+            shippingAddress,
+            shippingMethod: selectedShipping,
+            shippingCost: getShippingCost(),
+            subtotal: getSubtotal(),
+            tax: getTax(),
+            total: getTotal(),
+            couponCode: cart.couponCode,
+          }),
+        });
+
+        const { keyId, razorpayOrder, order: localOrder } = response.data;
+
+        const options = {
+          key: keyId,
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency,
+          name: 'CLOTHI',
+          description: 'E-commerce Purchase',
+          order_id: razorpayOrder.id,
+          handler: async function (paymentRes) {
+            setLoading(true);
+            try {
+              const verifyResponse = await apiFetch('/orders/razorpay/verify', {
+                method: 'POST',
+                body: JSON.stringify({
+                  razorpay_order_id: paymentRes.razorpay_order_id,
+                  razorpay_payment_id: paymentRes.razorpay_payment_id,
+                  razorpay_signature: paymentRes.razorpay_signature,
+                  orderId: localOrder._id,
+                }),
+              });
+
+              if (verifyResponse.success) {
+                await clearCart();
+                toast.success('Payment verified successfully!');
+                router.push(`/orders?success=true&orderId=${localOrder._id}`);
+              } else {
+                throw new Error(verifyResponse.message || 'Payment verification failed');
+              }
+            } catch (err) {
+              toast.error(err.message || 'Payment verification failed');
+              router.push(`/orders?success=false&orderId=${localOrder._id}`);
+            } finally {
+              setLoading(false);
+            }
+          },
+          prefill: {
+            name: `${shippingAddress.firstName} ${shippingAddress.lastName}`,
+            email: shippingAddress.email,
+            contact: shippingAddress.phone || '',
+          },
+          theme: {
+            color: '#111111',
+          },
+          modal: {
+            ondismiss: function () {
+              toast.error('Payment cancelled');
+              setLoading(false);
+            },
+          },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        const orderData = {
+          items: orderItems,
+          shippingAddress,
+          shippingMethod: selectedShipping,
+          shippingCost: getShippingCost(),
+          subtotal: getSubtotal(),
+          tax: getTax(),
+          total: getTotal(),
+          paymentMethod: 'card',
+          cardLast4: paymentForm.cardNumber.slice(-4),
+        };
+
+        const response = await apiFetch('/orders', {
+          method: 'POST',
+          body: JSON.stringify(orderData),
+        });
+
+        await clearCart();
+        toast.success('Order placed successfully!');
+        router.push(`/orders?success=true&orderId=${response.data?._id || ''}`);
+      }
     } catch (err) {
       toast.error(err.message || 'Failed to place order');
     } finally {
@@ -200,6 +315,10 @@ export default function CheckoutPage() {
 
   return (
     <div className={styles.page}>
+      <Script 
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+      />
       <div className={styles.inner}>
         {/* Header */}
         <header className={styles.header}>
@@ -353,7 +472,7 @@ export default function CheckoutPage() {
                         type="tel"
                         value={addressForm.phone}
                         onChange={(e) => setAddressForm({...addressForm, phone: e.target.value})}
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+91 98765 43210"
                       />
                     </div>
 
@@ -425,63 +544,104 @@ export default function CheckoutPage() {
                   Payment Method
                 </h2>
 
-                <form onSubmit={handlePaymentSubmit} className={styles.form}>
-                  <div className={styles.formGroup}>
-                    <label>Card Number</label>
+                <div className={styles.paymentMethods}>
+                  <label className={`${styles.paymentMethodOption} ${paymentMethod === 'razorpay' ? styles.selected : ''}`}>
                     <input
-                      type="text"
-                      value={paymentForm.cardNumber}
-                      onChange={(e) => setPaymentForm({...paymentForm, cardNumber: formatCardNumber(e.target.value)})}
-                      placeholder="1234 5678 9012 3456"
-                      maxLength={19}
-                      required
+                      type="radio"
+                      name="paymentMethod"
+                      value="razorpay"
+                      checked={paymentMethod === 'razorpay'}
+                      onChange={() => setPaymentMethod('razorpay')}
                     />
-                  </div>
-
-                  <div className={styles.formGroup}>
-                    <label>Name on Card</label>
-                    <input
-                      type="text"
-                      value={paymentForm.cardName}
-                      onChange={(e) => setPaymentForm({...paymentForm, cardName: e.target.value})}
-                      placeholder="John Doe"
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label>Expiry Date</label>
-                      <input
-                        type="text"
-                        value={paymentForm.expiry}
-                        onChange={(e) => setPaymentForm({...paymentForm, expiry: formatExpiry(e.target.value)})}
-                        placeholder="MM/YY"
-                        maxLength={5}
-                        required
-                      />
+                    <div className={styles.paymentMethodContent}>
+                      <span className={styles.paymentMethodLabel}>Razorpay (UPI, Cards, Netbanking, Wallets)</span>
+                      <p className={styles.paymentMethodDesc}>Pay securely with credit/debit card, UPI, netbanking, or wallets.</p>
                     </div>
-                    <div className={styles.formGroup}>
-                      <label>CVV</label>
-                      <input
-                        type="text"
-                        value={paymentForm.cvv}
-                        onChange={(e) => setPaymentForm({...paymentForm, cvv: e.target.value.replace(/\D/g, '').slice(0, 4)})}
-                        placeholder="123"
-                        maxLength={4}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <label className={styles.checkbox}>
-                    <input
-                      type="checkbox"
-                      checked={paymentForm.saveCard}
-                      onChange={(e) => setPaymentForm({...paymentForm, saveCard: e.target.checked})}
-                    />
-                    <span>Save card for future purchases</span>
                   </label>
+
+                  <label className={`${styles.paymentMethodOption} ${paymentMethod === 'card' ? styles.selected : ''}`}>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="card"
+                      checked={paymentMethod === 'card'}
+                      onChange={() => setPaymentMethod('card')}
+                    />
+                    <div className={styles.paymentMethodContent}>
+                      <span className={styles.paymentMethodLabel}>Manual Credit/Debit Card (Testing Only)</span>
+                      <p className={styles.paymentMethodDesc}>Simulated order creation without online payment transaction.</p>
+                    </div>
+                  </label>
+                </div>
+
+                <form onSubmit={handlePaymentSubmit} className={styles.form}>
+                  {paymentMethod === 'card' && (
+                    <>
+                      <div className={styles.formGroup}>
+                        <label>Card Number</label>
+                        <input
+                          type="text"
+                          value={paymentForm.cardNumber}
+                          onChange={(e) => setPaymentForm({...paymentForm, cardNumber: formatCardNumber(e.target.value)})}
+                          placeholder="1234 5678 9012 3456"
+                          maxLength={19}
+                          required={paymentMethod === 'card'}
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Name on Card</label>
+                        <input
+                          type="text"
+                          value={paymentForm.cardName}
+                          onChange={(e) => setPaymentForm({...paymentForm, cardName: e.target.value})}
+                          placeholder="John Doe"
+                          required={paymentMethod === 'card'}
+                        />
+                      </div>
+
+                      <div className={styles.formRow}>
+                        <div className={styles.formGroup}>
+                          <label>Expiry Date</label>
+                          <input
+                            type="text"
+                            value={paymentForm.expiry}
+                            onChange={(e) => setPaymentForm({...paymentForm, expiry: formatExpiry(e.target.value)})}
+                            placeholder="MM/YY"
+                            maxLength={5}
+                            required={paymentMethod === 'card'}
+                          />
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label>CVV</label>
+                          <input
+                            type="text"
+                            value={paymentForm.cvv}
+                            onChange={(e) => setPaymentForm({...paymentForm, cvv: e.target.value.replace(/\D/g, '').slice(0, 4)})}
+                            placeholder="123"
+                            maxLength={4}
+                            required={paymentMethod === 'card'}
+                          />
+                        </div>
+                      </div>
+
+                      <label className={styles.checkbox}>
+                        <input
+                          type="checkbox"
+                          checked={paymentForm.saveCard}
+                          onChange={(e) => setPaymentForm({...paymentForm, saveCard: e.target.checked})}
+                        />
+                        <span>Save card for future purchases</span>
+                      </label>
+                    </>
+                  )}
+
+                  {paymentMethod === 'razorpay' && (
+                    <div className={styles.razorpayInfo}>
+                      <Shield size={24} className={styles.razorpayInfoIcon} />
+                      <p>You will complete your payment securely via the Razorpay gateway after reviewing your order in the next step.</p>
+                    </div>
+                  )}
 
                   <div className={styles.formActions}>
                     <button type="button" className={styles.backBtn} onClick={() => setStep(1)}>
@@ -525,7 +685,7 @@ export default function CheckoutPage() {
 
                 <div className={styles.reviewSection}>
                   <h3>Payment</h3>
-                  <p>Card ending in {paymentForm.cardNumber.slice(-4)}</p>
+                  <p>{paymentMethod === 'razorpay' ? 'Razorpay (Cards, UPI, Netbanking, Wallets)' : `Card ending in ${paymentForm.cardNumber.slice(-4)}`}</p>
                   <button className={styles.editBtn} onClick={() => setStep(2)}>Edit</button>
                 </div>
 

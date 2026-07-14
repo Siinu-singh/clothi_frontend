@@ -14,10 +14,44 @@ import styles from './Orders.module.css';
 
 const ORDER_STATUSES = {
   pending: { label: 'Pending', icon: Clock, color: '#f59e0b' },
+  confirmed: { label: 'Confirmed', icon: CheckCircle, color: '#10b981' },
   processing: { label: 'Processing', icon: Package, color: '#3b82f6' },
   shipped: { label: 'Shipped', icon: Truck, color: '#8b5cf6' },
   delivered: { label: 'Delivered', icon: CheckCircle, color: '#10b981' },
   cancelled: { label: 'Cancelled', icon: XCircle, color: '#ef4444' },
+};
+
+const getProductId = (item) => {
+  if (!item) return '';
+  const pId = item.productId || item.product;
+  if (!pId) return '';
+  if (typeof pId === 'string') return pId;
+  if (typeof pId === 'object') {
+    if (pId._id) {
+      return typeof pId._id === 'object' && pId._id.$oid ? pId._id.$oid : pId._id.toString();
+    }
+    if (pId.$oid) return pId.$oid;
+    return pId.toString();
+  }
+  return '';
+};
+
+const getProductImage = (item) => {
+  if (!item) return '/placeholder.png';
+  if (item.product?.image) return item.product.image;
+  if (item.productId && typeof item.productId === 'object' && item.productId.image) {
+    return item.productId.image;
+  }
+  return item.image || '/placeholder.png';
+};
+
+const getProductTitle = (item) => {
+  if (!item) return 'Product';
+  if (item.product?.title) return item.product.title;
+  if (item.productId && typeof item.productId === 'object' && item.productId.title) {
+    return item.productId.title;
+  }
+  return item.title || 'Product';
 };
 
 export default function OrdersPage() {
@@ -73,7 +107,7 @@ export default function OrdersPage() {
   };
 
   const formatPrice = (price) => {
-    return `$${(price || 0).toFixed(2)}`;
+    return `₹${(price || 0).toFixed(2)}`;
   };
 
   const getStatusInfo = (status) => {
@@ -200,16 +234,16 @@ export default function OrdersPage() {
                           <div key={idx} className={styles.orderItem}>
                             <div className={styles.itemImage}>
                               <img 
-                                src={item.product?.image || item.image || '/placeholder.png'} 
-                                alt={item.product?.title || item.title} 
+                                src={getProductImage(item)} 
+                                alt={getProductTitle(item)} 
                               />
                             </div>
                             <div className={styles.itemInfo}>
                               <Link 
-                                href={`/product/${item.productId || item.product?._id}`}
+                                href={`/product/${getProductId(item)}`}
                                 className={styles.itemName}
                               >
-                                {item.product?.title || item.title || 'Product'}
+                                {getProductTitle(item)}
                               </Link>
                               <div className={styles.itemMeta}>
                                 {item.size && <span>Size: {item.size}</span>}
