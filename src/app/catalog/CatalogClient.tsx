@@ -115,9 +115,15 @@ function SortDrawer({ sortBy, onSort, onClose }: SortDrawerProps) {
 
 interface CatalogClientProps {
   categoryProp?: string;
+  initialResponse?: any;
+  initialSortBy?: string;
 }
 
-export default function CatalogClient({ categoryProp = '' }: CatalogClientProps) {
+export default function CatalogClient({
+  categoryProp = '',
+  initialResponse = null,
+  initialSortBy = 'newest',
+}: CatalogClientProps) {
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [mobileSortOpen, setMobileSortOpen] = useState(false);
 
@@ -127,7 +133,7 @@ export default function CatalogClient({ categoryProp = '' }: CatalogClientProps)
     selectedSize, setSelectedSize,
     sortBy, setSortBy,
     currentTitle,
-  } = useCatalogProducts({ categoryProp });
+  } = useCatalogProducts({ categoryProp, initialResponse, initialSortBy });
 
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 

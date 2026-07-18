@@ -40,7 +40,7 @@ const Footer = () => {
           {/* Column 1: Brand + Newsletter */}
           <div className={styles.col}>
             <Link href="/" className={styles.brand}>
-              <img src="/Logo.png" alt="Clothi Logo" className={styles.brandLogo} />
+              <img src="/logo.png" alt="Clothi Logo" className={styles.brandLogo} />
               <span className={styles.brandText}>CLOTHI</span>
             </Link>
             <p className={styles.introText}>
@@ -57,7 +57,7 @@ const Footer = () => {
                 disabled={loading}
               />
               <button type="submit" className={styles.newsletterBtn} disabled={loading || subscribed}>
-                {loading ? 'SIGNING UP...' : subscribed ? 'SUBSCRIBED ✓' : 'SIGN UP NOW'}
+                {loading ? 'SIGNING UP...' : subscribed ? 'SUBSCRIBED ✓' : 'SUBSCRIBE NOW'}
               </button>
             </form>
           </div>
@@ -114,7 +114,7 @@ const Footer = () => {
       {/* Mobile Brand Bottom */}
       <div className={styles.mobileBrandBottom}>
         <Link href="/" className={styles.mobileBrandLink}>
-          <img src="/Logo.png" alt="Clothi Logo" className={styles.mobileBrandLogo} />
+          <img src="/logo.png" alt="Clothi Logo" className={styles.mobileBrandLogo} />
           <span className={styles.mobileBrandName}>CLOTHI</span>
         </Link>
       </div>

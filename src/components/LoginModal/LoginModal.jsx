@@ -353,7 +353,7 @@ export default function LoginModal({ isOpen, onClose }) {
         {/* ── Left Pane: Branding ────────────────────────── */}
         <div className={styles.leftPane}>
           <div className={styles.brandContent}>
-            <img src="/Logo.png" alt="Clothi" className={styles.brandLogo} />
+            <img src="/logo.png" alt="Clothi" className={styles.brandLogo} />
             <h2 className={styles.brandName}>CLOTHI</h2>
             <p className={styles.brandTagline}>
               Welcome!<br />

@@ -27,11 +27,31 @@ export const metadata = {
 
 import { Suspense } from 'react';
 import CatalogClient from './CatalogClient';
+import { apiFetch } from '../../lib/api';
 
-export default function CatalogPage() {
+export default async function CatalogPage({ searchParams }) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
+  const category = resolvedSearchParams.category || '';
+  const sortBy = resolvedSearchParams.sortBy || 'newest';
+
+  let initialResponse = null;
+  try {
+    let url = `/products?page=1&limit=20&sortBy=${sortBy}`;
+    if (category) {
+      url += `&category=${category}`;
+    }
+    initialResponse = await apiFetch(url);
+  } catch (error) {
+    console.error('Failed to pre-fetch products for catalog page:', error);
+  }
+
   return (
     <Suspense fallback={<div>Loading catalog...</div>}>
-      <CatalogClient />
+      <CatalogClient
+        categoryProp={category}
+        initialResponse={initialResponse}
+        initialSortBy={sortBy}
+      />
     </Suspense>
   );
 }

@@ -30,6 +30,8 @@ export const SORT_OPTIONS = [
 
 interface UseCatalogProductsOptions {
   categoryProp?: string;
+  initialResponse?: any;
+  initialSortBy?: string;
 }
 
 interface UseCatalogProductsResult {
@@ -49,7 +51,11 @@ interface UseCatalogProductsResult {
   currentTitle: string;
 }
 
-export function useCatalogProducts({ categoryProp = '' }: UseCatalogProductsOptions = {}): UseCatalogProductsResult {
+export function useCatalogProducts({
+  categoryProp = '',
+  initialResponse = null,
+  initialSortBy = 'newest',
+}: UseCatalogProductsOptions = {}): UseCatalogProductsResult {
   const searchParams = useSearchParams();
   const customTitle = searchParams.get('title') ?? '';
 
@@ -57,18 +63,27 @@ export function useCatalogProducts({ categoryProp = '' }: UseCatalogProductsOpti
     categoryProp || searchParams.get('category') || ''
   );
   const [selectedSize, setSelectedSize] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const [sortBy, setSortBy] = useState(initialSortBy || searchParams.get('sortBy') || 'newest');
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const initialProducts = initialResponse?.data?.products || initialResponse?.products || [];
+  const initialPagination = initialResponse?.data?.pagination;
+
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialResponse);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(() => {
+    if (initialPagination) {
+      return initialPagination.page < initialPagination.pages;
+    }
+    return initialProducts.length >= 20;
+  });
   const [error, setError] = useState<string | null>(null);
   const [retryTrigger, setRetryTrigger] = useState(0);
 
   const abortRef = useRef<AbortController | null>(null);
-  const lastFetchedKey = useRef<string>('');
+  const lastFetchedKey = useRef<string>(initialResponse ? `${selectedCategory}::${sortBy}` : '');
+  const isInitialMount = useRef(true);
 
   // Sync category from URL params
   useEffect(() => {
@@ -81,6 +96,12 @@ export function useCatalogProducts({ categoryProp = '' }: UseCatalogProductsOpti
 
   // Fetching logic
   useEffect(() => {
+    if (isInitialMount.current && initialResponse) {
+      isInitialMount.current = false;
+      setLoading(false);
+      return;
+    }
+
     let isCurrent = true;
     const currentKey = `${selectedCategory}::${sortBy}`;
 

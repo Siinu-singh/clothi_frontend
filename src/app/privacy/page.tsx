@@ -30,7 +30,7 @@ export default function PrivacyPage() {
     "publisher": {
       "@type": "Organization",
       "name": "CLOTHI",
-      "logo": "https://clothi.com/Logo.png"
+      "logo": "https://clothi.co.in/logo.png"
     },
     "datePublished": "2026-06-17",
     "dateModified": "2026-06-17"

@@ -329,7 +329,7 @@ const Navbar = ({ initialAnnouncements }) => {
                 {mobileMenuOpen ? <X size={24} strokeWidth={1.5} /> : <Menu size={24} strokeWidth={1.5} />}
               </button>
               <Link href="/" className={styles.brand}>
-                <img src="/Logo.png" alt="Clothi Logo" className={styles.logo} />
+                <img src="/logo.png" alt="Clothi Logo" className={styles.logo} />
                 <span className={styles.brandText}>CLOTHI</span>
               </Link>
             </div>
